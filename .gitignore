@@ -433,3 +433,17 @@ docker-compose.override.yml
 
 # Byebug and GDB
 .gdb_history
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+
+# env files (can opt-in for committing if needed)
+.env*
+
