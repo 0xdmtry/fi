@@ -4,13 +4,15 @@ FROM rust:1.85.1
 RUN cargo install cargo-watch
 
 # Set working directory
+ # ✅ matches the volume mount and copied files
 WORKDIR /app
 
-# Copy all project files into the container
+# Copy everything from the context (which is app/api)
+ # ✅ includes Cargo.toml and src/
 COPY . .
 
-# Optional: Pre-fetch dependencies to speed up initial dev run
+# Pre-fetch dependencies
 RUN cargo fetch
 
-# Start with live reload on file changes
-CMD ["cargo", "watch", "-s", "cargo clean && cargo run"]
+# Run app with live reload
+CMD ["cargo", "watch", "-x", "run"]
