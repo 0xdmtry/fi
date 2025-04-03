@@ -13,6 +13,29 @@ services:
     networks:
       - fi-network
 
+  fi-emailer:
+    container_name: fi-emailer
+    build:
+      context: ../../app/emailer                     # ✅ set context to where Cargo.toml is
+      dockerfile: Emailer.dev.dockerfile             # ✅ no leading ./ or ../ needed, it's relative to `context`
+    restart: always
+    ports:
+      - "8001:8001"
+    volumes:
+      - ../../app/emailer:/app                       # ✅ mount source correctly
+      - /app/target                                   # ✅ avoid using host target dir
+    networks:
+      - fi-network
+
+  mailhog:
+    container_name: mailhog
+    image: "mailhog/mailhog:latest"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - fi-network
+
 networks:
   fi-network:
     driver: bridge

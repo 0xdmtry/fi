@@ -1,0 +1,110 @@
+{
+	"info": {
+		"_postman_id": "4d0ada13-27fa-4f38-893d-3515f07a6c2e",
+		"name": "fi-de",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7700049"
+	},
+	"item": [
+		{
+			"name": "local",
+			"item": [
+				{
+					"name": "app",
+					"item": [
+						{
+							"name": "api",
+							"item": [
+								{
+									"name": "v1",
+									"item": [
+										{
+											"name": "ping",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{local_api_host}}/v1/ping",
+													"host": [
+														"{{local_api_host}}"
+													],
+													"path": [
+														"v1",
+														"ping"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "emailer",
+							"item": [
+								{
+									"name": "v1",
+									"item": [
+										{
+											"name": "ping",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{local_emailer_host}}/v1/ping",
+													"host": [
+														"{{local_emailer_host}}"
+													],
+													"path": [
+														"v1",
+														"ping"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "local_api_host",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "local_emailer_host",
+			"value": "http://localhost:8001",
+			"type": "string"
+		}
+	]
+}
