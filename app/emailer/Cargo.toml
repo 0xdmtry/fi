@@ -12,6 +12,7 @@ serde_json = "1.0.140"                                                  # JSON e
 uuid = { version = "1.16.0", features = ["v4", "serde"] }               # Generate UUIDs for user IDs and other unique IDs
 chrono = { version = "0.4.40", features = ["serde"] }                   # Handle timestamps, used for created_at/updated_at fields
 dotenvy = "0.15.7"                                                      # Load environment variables from `.env` file
+anyhow = "1.0.97"
 
 # --- Database ---
 sea-orm = { version = "1.1.8", features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros"] }  # Async ORM for PostgreSQL
