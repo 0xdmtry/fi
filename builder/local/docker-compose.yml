@@ -1,6 +1,6 @@
 services:
-  authorizer:
-    container_name: authorizer
+  app-authorizer:
+    container_name: app-authorizer
     build:
       context: ../../app/authorizer                     # ✅ set context to where Cargo.toml is
       dockerfile: Authorizer.dev.dockerfile             # ✅ no leading ./ or ../ needed, it's relative to `context`
@@ -13,8 +13,8 @@ services:
     networks:
       - fi-network
 
-  emailer:
-    container_name: emailer
+  app-emailer:
+    container_name: app-emailer
     build:
       context: ../../app/emailer                     # ✅ set context to where Cargo.toml is
       dockerfile: Emailer.dev.dockerfile             # ✅ no leading ./ or ../ needed, it's relative to `context`

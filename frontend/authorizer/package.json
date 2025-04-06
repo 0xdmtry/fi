@@ -1,5 +1,5 @@
 {
-  "name": "fe-api",
+  "name": "authorizer",
   "version": "0.1.0",
   "private": true,
   "scripts": {
