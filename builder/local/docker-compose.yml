@@ -1,20 +1,20 @@
 services:
-  fi-api:
-    container_name: fi-api
+  authorizer:
+    container_name: authorizer
     build:
-      context: ../../app/api                     # ✅ set context to where Cargo.toml is
-      dockerfile: Api.dev.dockerfile             # ✅ no leading ./ or ../ needed, it's relative to `context`
+      context: ../../app/authorizer                     # ✅ set context to where Cargo.toml is
+      dockerfile: Authorizer.dev.dockerfile             # ✅ no leading ./ or ../ needed, it's relative to `context`
     restart: always
     ports:
       - "8000:8000"
     volumes:
-      - ../../app/api:/app                       # ✅ mount source correctly
+      - ../../app/authorizer:/app                       # ✅ mount source correctly
       - /app/target                              # ✅ avoid using host target dir
     networks:
       - fi-network
 
-  fi-emailer:
-    container_name: fi-emailer
+  emailer:
+    container_name: emailer
     build:
       context: ../../app/emailer                     # ✅ set context to where Cargo.toml is
       dockerfile: Emailer.dev.dockerfile             # ✅ no leading ./ or ../ needed, it's relative to `context`
