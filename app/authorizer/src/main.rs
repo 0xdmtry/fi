@@ -1,9 +1,10 @@
 mod app;
 mod routes;
+mod db;
 
 #[tokio::main]
 async fn main() {
-    let app = app::create_app();
+    let app = app::create_app().await;
 
     println!("🚀 Api running on http://localhost:8000");
 
