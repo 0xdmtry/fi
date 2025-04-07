@@ -40,6 +40,9 @@ tracing-opentelemetry = "0.30.0"                                        # Export
 opentelemetry = "0.29.0"         # OpenTelemetry core lib with Tokio runtime
 opentelemetry-jaeger = "0.22.0"                                         # Jaeger exporter for OpenTelemetry traces
 
+# --- Migration ---
+migration = { path = "./migration" }
+
 [dev-dependencies]
 # --- Dev-only: for advanced testing patterns ---
 pretty_assertions = "1.4.1"                                             # Pretty diff output when assertions fail in tests
