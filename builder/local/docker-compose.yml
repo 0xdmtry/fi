@@ -10,6 +10,31 @@ services:
     volumes:
       - ../../app/authorizer:/app                       # ✅ mount source correctly
       - /app/target                              # ✅ avoid using host target dir
+    depends_on:
+      db-app-authorizer:
+        condition: service_healthy
+      app-emailer:
+        condition: service_started
+    networks:
+      - fi-network
+
+  db-app-authorizer:
+    container_name: fi-api-db
+    image: postgres:17.4
+    restart: always
+    environment:
+      POSTGRES_DB: authorizer
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - .dbdata/postgres/:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    ports:
+      - "5432:5432"
     networks:
       - fi-network
 
