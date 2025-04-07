@@ -19,7 +19,7 @@ services:
       - fi-network
 
   db-app-authorizer:
-    container_name: fi-api-db
+    container_name: db-app-authorizer
     image: postgres:17.4
     restart: always
     environment:
