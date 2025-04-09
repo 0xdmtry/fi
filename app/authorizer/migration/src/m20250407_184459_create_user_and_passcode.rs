@@ -42,14 +42,49 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_passcode_code")
+                    .table(Passcode::Table)
+                    .col(Passcode::Code)
+                    .to_owned(),
+            )
+            .await?;
 
         
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_passcode_user_id")
+                    .table(Passcode::Table)
+                    .col(Passcode::UserId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_passcode_lookup")
+                    .table(Passcode::Table)
+                    .col(Passcode::Code)
+                    .col(Passcode::UserId)
+                    .col(Passcode::Used)
+                    .col(Passcode::ExpiredAt)
+                    .to_owned(),
+            )
+            .await?;
+        
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager.drop_table(Table::drop().table(Passcode::Table).to_owned()).await?;
-        manager.drop_table(Table::drop().table(User::Table).to_owned()).await
+        manager.drop_table(Table::drop().table(User::Table).to_owned()).await?;
+        Ok(())
     }
 }
 
