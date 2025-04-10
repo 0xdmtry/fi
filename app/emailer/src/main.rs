@@ -5,6 +5,7 @@ mod handlers;
 mod config;
 mod error;
 mod models;
+mod db;
 
 #[tokio::main]
 async fn main() {

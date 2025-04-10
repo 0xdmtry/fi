@@ -2,14 +2,14 @@ services:
   app-authorizer:
     container_name: app-authorizer
     build:
-      context: ../../app/authorizer                     # ✅ set context to where Cargo.toml is
-      dockerfile: Authorizer.dev.dockerfile             # ✅ no leading ./ or ../ needed, it's relative to `context`
+      context: ../../app/authorizer
+      dockerfile: Authorizer.dev.dockerfile
     restart: always
     ports:
       - "8000:8000"
     volumes:
-      - ../../app/authorizer:/app                       # ✅ mount source correctly
-      - /app/target                              # ✅ avoid using host target dir
+      - ../../app/authorizer:/app
+      - /app/target
     depends_on:
       db-app-authorizer:
         condition: service_healthy
@@ -27,7 +27,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:
-      - .dbdata/postgres/:/var/lib/postgresql/data
+      - .dbdata/postgres/authorizer/:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U root"]
       interval: 5s
@@ -41,14 +41,37 @@ services:
   app-emailer:
     container_name: app-emailer
     build:
-      context: ../../app/emailer                     # ✅ set context to where Cargo.toml is
-      dockerfile: Emailer.dev.dockerfile             # ✅ no leading ./ or ../ needed, it's relative to `context`
+      context: ../../app/emailer
+      dockerfile: Emailer.dev.dockerfile
     restart: always
+    depends_on:
+      db-app-emailer:
+        condition: service_healthy
     ports:
       - "8001:8001"
     volumes:
-      - ../../app/emailer:/app                       # ✅ mount source correctly
-      - /app/target                                   # ✅ avoid using host target dir
+      - ../../app/emailer:/app
+      - /app/target
+    networks:
+      - fi-network
+
+  db-app-emailer:
+    container_name: db-app-emailer
+    image: postgres:17.4
+    restart: always
+    environment:
+      POSTGRES_DB: emailer
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - .dbdata/postgres/emailer/:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    ports:
+      - "5433:5432"
     networks:
       - fi-network
 
