@@ -6,6 +6,6 @@ pub struct SendPasscodeRequest {
     #[validate(email)]
     pub email: String,
 
-    #[validate(length(min = 4, max = 8))]
+    #[validate(length(min = 4, max = 16))]
     pub passcode: String,
 }

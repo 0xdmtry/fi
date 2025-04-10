@@ -2,14 +2,12 @@ mod app;
 mod routes;
 mod services;
 mod handlers;
-mod config;
-mod error;
 mod models;
 mod db;
 
 #[tokio::main]
 async fn main() {
-    let app = app::create_app();
+    let app = app::create_app().await;
 
     println!("🚀 Emailer running on http://localhost:8001");
 
