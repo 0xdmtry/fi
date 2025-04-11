@@ -42,6 +42,7 @@ opentelemetry-jaeger = "0.22.0"                                         # Jaeger
 
 # --- Migration ---
 migration = { path = "./migration" }
+anyhow = "1.0.97"
 
 [dev-dependencies]
 # --- Dev-only: for advanced testing patterns ---

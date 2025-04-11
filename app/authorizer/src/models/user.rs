@@ -1,7 +1,6 @@
 use sea_orm::entity::prelude::*;
 use uuid::Uuid;
 
-
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "users")]
 pub struct Model {

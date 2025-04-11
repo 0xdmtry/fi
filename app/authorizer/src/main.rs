@@ -1,6 +1,10 @@
 mod app;
-mod routes;
 mod db;
+mod routes;
+mod handlers;
+mod services;
+mod repositories;
+mod models;
 
 #[tokio::main]
 async fn main() {
