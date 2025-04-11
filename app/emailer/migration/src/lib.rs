@@ -1,5 +1,5 @@
 pub use sea_orm_migration::prelude::*;
-
+pub mod m20250411_000905_create_email;
 pub struct Migrator;
 
 #[async_trait::async_trait]
