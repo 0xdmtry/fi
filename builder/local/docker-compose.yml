@@ -12,7 +12,7 @@ services:
       - /app/target
     depends_on:
       db-app-authorizer:
-        condition: service_healthy
+        condition: service_started
       app-emailer:
         condition: service_started
     networks:
@@ -28,11 +28,6 @@ services:
       POSTGRES_PASSWORD: root
     volumes:
       - .dbdata/postgres/authorizer/:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root"]
-      interval: 5s
-      timeout: 5s
-      retries: 3
     ports:
       - "5432:5432"
     networks:
@@ -46,7 +41,7 @@ services:
     restart: always
     depends_on:
       db-app-emailer:
-        condition: service_healthy
+        condition: service_started
     ports:
       - "8001:8001"
     volumes:
@@ -65,11 +60,6 @@ services:
       POSTGRES_PASSWORD: root
     volumes:
       - .dbdata/postgres/emailer/:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root"]
-      interval: 5s
-      timeout: 5s
-      retries: 3
     ports:
       - "5433:5432"
     networks:
