@@ -28,8 +28,10 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Passcode::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(Passcode::UserId).uuid().not_null())
                     .col(ColumnDef::new(Passcode::Code).string_len(16).not_null())
-                    .col(ColumnDef::new(Passcode::ExpiredAt).timestamp().not_null())
+                    .col(ColumnDef::new(Passcode::AttemptCount).integer().not_null().default(0))
+                    .col(ColumnDef::new(Passcode::ResendCount).integer().not_null().default(0))
                     .col(ColumnDef::new(Passcode::Used).boolean().not_null())
+                    .col(ColumnDef::new(Passcode::ExpiredAt).timestamp().not_null())
                     .col(ColumnDef::new(Passcode::CreatedAt).timestamp().not_null())
                     .col(ColumnDef::new(Passcode::UpdatedAt).timestamp().not_null())
                     .foreign_key(
@@ -40,16 +42,6 @@ impl MigrationTrait for Migration {
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
                     )
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .name("idx_passcode_code")
-                    .table(Passcode::Table)
-                    .col(Passcode::Code)
                     .to_owned(),
             )
             .await?;
@@ -77,7 +69,27 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
-        
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_passcode_attempt_count")
+                    .table(Passcode::Table)
+                    .col(Passcode::AttemptCount)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_passcode_resend_count")
+                    .table(Passcode::Table)
+                    .col(Passcode::ResendCount)
+                    .to_owned(),
+            )
+            .await?;
+
         Ok(())
     }
 
@@ -104,8 +116,10 @@ enum Passcode {
     Id,
     UserId,
     Code,
-    ExpiredAt,
+    AttemptCount,
+    ResendCount,
     Used,
+    ExpiredAt,
     CreatedAt,
     UpdatedAt,
 }

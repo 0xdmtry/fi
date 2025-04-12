@@ -14,8 +14,10 @@ pub async fn generate_and_insert(db: &DbConn, user: &user::Model) -> anyhow::Res
         id: Set(Uuid::new_v4()),
         user_id: Set(user.id),
         code: Set(passcode.clone()),
-        expire_at: Set(expires),
+        attempt_count: Set(0),
+        resend_count: Set(0),
         used: Set(false),
+        expired_at: Set(expires),
         created_at: Set(Utc::now()),
         updated_at: Set(Utc::now()),
     };

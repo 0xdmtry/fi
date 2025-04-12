@@ -9,9 +9,13 @@ pub struct Model {
 
     pub user_id: Uuid,
     pub code: String,
-    pub expire_at: DateTimeUtc,
+
+    pub attempt_count: i32,
+    pub resend_count: i32,
+
     pub used: bool,
 
+    pub expired_at: DateTimeUtc,
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,
 }
