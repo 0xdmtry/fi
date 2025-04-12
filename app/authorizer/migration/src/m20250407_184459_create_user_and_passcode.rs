@@ -13,9 +13,9 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(ColumnDef::new(Users::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(Users::Email).string_len(254).not_null().unique_key())
-                    .col(ColumnDef::new(Users::CreatedAt).timestamp().not_null())
-                    .col(ColumnDef::new(Users::UpdatedAt).timestamp().not_null())
-                    .col(ColumnDef::new(Users::DeletedAt).timestamp().null())
+                    .col(ColumnDef::new(Users::CreatedAt).timestamp_with_time_zone().not_null())
+                    .col(ColumnDef::new(Users::UpdatedAt).timestamp_with_time_zone().not_null())
+                    .col(ColumnDef::new(Users::DeletedAt).timestamp_with_time_zone().null())
                     .to_owned(),
             )
             .await?;
@@ -31,9 +31,9 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Passcodes::AttemptCount).integer().not_null().default(0))
                     .col(ColumnDef::new(Passcodes::ResendCount).integer().not_null().default(0))
                     .col(ColumnDef::new(Passcodes::Used).boolean().not_null())
-                    .col(ColumnDef::new(Passcodes::ExpiredAt).timestamp().not_null())
-                    .col(ColumnDef::new(Passcodes::CreatedAt).timestamp().not_null())
-                    .col(ColumnDef::new(Passcodes::UpdatedAt).timestamp().not_null())
+                    .col(ColumnDef::new(Passcodes::ExpiredAt).timestamp_with_time_zone().not_null())
+                    .col(ColumnDef::new(Passcodes::CreatedAt).timestamp_with_time_zone().not_null())
+                    .col(ColumnDef::new(Passcodes::UpdatedAt).timestamp_with_time_zone().not_null())
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-passcode-user_id")
