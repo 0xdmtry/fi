@@ -4,6 +4,7 @@ use crate::models::join::JoinRequest;
 use crate::services::user_service::process_join_request;
 use sea_orm::DbConn;
 use validator::Validate;
+use crate::utils::normalize::normalize_email;
 
 pub async fn join_handler(
     Extension(db_conn): Extension<DbConn>,
@@ -13,7 +14,9 @@ pub async fn join_handler(
         return Err((StatusCode::BAD_REQUEST, format!("Validation failed: {e}")));
     }
 
-    process_join_request(&payload.email, &db_conn)
+    let normalized_email = normalize_email(&payload.email);
+
+    process_join_request(&normalized_email, &db_conn)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Internal error: {e}")))?;
 

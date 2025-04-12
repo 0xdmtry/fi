@@ -1,10 +1,4 @@
-mod app;
-mod db;
-mod routes;
-mod handlers;
-mod services;
-mod repositories;
-mod models;
+use authorizer::app;
 
 #[tokio::main]
 async fn main() {
