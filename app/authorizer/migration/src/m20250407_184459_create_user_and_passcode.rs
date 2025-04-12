@@ -9,13 +9,13 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(User::Table)
+                    .table(Users::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(User::Id).uuid().not_null().primary_key())
-                    .col(ColumnDef::new(User::Email).string_len(254).not_null().unique_key())
-                    .col(ColumnDef::new(User::CreatedAt).timestamp().not_null())
-                    .col(ColumnDef::new(User::UpdatedAt).timestamp().not_null())
-                    .col(ColumnDef::new(User::DeletedAt).timestamp().null())
+                    .col(ColumnDef::new(Users::Id).uuid().not_null().primary_key())
+                    .col(ColumnDef::new(Users::Email).string_len(254).not_null().unique_key())
+                    .col(ColumnDef::new(Users::CreatedAt).timestamp().not_null())
+                    .col(ColumnDef::new(Users::UpdatedAt).timestamp().not_null())
+                    .col(ColumnDef::new(Users::DeletedAt).timestamp().null())
                     .to_owned(),
             )
             .await?;
@@ -23,22 +23,22 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Passcode::Table)
+                    .table(Passcodes::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Passcode::Id).uuid().not_null().primary_key())
-                    .col(ColumnDef::new(Passcode::UserId).uuid().not_null())
-                    .col(ColumnDef::new(Passcode::Code).string_len(16).not_null())
-                    .col(ColumnDef::new(Passcode::AttemptCount).integer().not_null().default(0))
-                    .col(ColumnDef::new(Passcode::ResendCount).integer().not_null().default(0))
-                    .col(ColumnDef::new(Passcode::Used).boolean().not_null())
-                    .col(ColumnDef::new(Passcode::ExpiredAt).timestamp().not_null())
-                    .col(ColumnDef::new(Passcode::CreatedAt).timestamp().not_null())
-                    .col(ColumnDef::new(Passcode::UpdatedAt).timestamp().not_null())
+                    .col(ColumnDef::new(Passcodes::Id).uuid().not_null().primary_key())
+                    .col(ColumnDef::new(Passcodes::UserId).uuid().not_null())
+                    .col(ColumnDef::new(Passcodes::Code).string_len(16).not_null())
+                    .col(ColumnDef::new(Passcodes::AttemptCount).integer().not_null().default(0))
+                    .col(ColumnDef::new(Passcodes::ResendCount).integer().not_null().default(0))
+                    .col(ColumnDef::new(Passcodes::Used).boolean().not_null())
+                    .col(ColumnDef::new(Passcodes::ExpiredAt).timestamp().not_null())
+                    .col(ColumnDef::new(Passcodes::CreatedAt).timestamp().not_null())
+                    .col(ColumnDef::new(Passcodes::UpdatedAt).timestamp().not_null())
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-passcode-user_id")
-                            .from(Passcode::Table, Passcode::UserId)
-                            .to(User::Table, User::Id)
+                            .from(Passcodes::Table, Passcodes::UserId)
+                            .to(Users::Table, Users::Id)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
                     )
@@ -51,8 +51,8 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_passcode_user_id")
-                    .table(Passcode::Table)
-                    .col(Passcode::UserId)
+                    .table(Passcodes::Table)
+                    .col(Passcodes::UserId)
                     .to_owned(),
             )
             .await?;
@@ -61,11 +61,11 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_passcode_lookup")
-                    .table(Passcode::Table)
-                    .col(Passcode::Code)
-                    .col(Passcode::UserId)
-                    .col(Passcode::Used)
-                    .col(Passcode::ExpiredAt)
+                    .table(Passcodes::Table)
+                    .col(Passcodes::Code)
+                    .col(Passcodes::UserId)
+                    .col(Passcodes::Used)
+                    .col(Passcodes::ExpiredAt)
                     .to_owned(),
             )
             .await?;
@@ -74,8 +74,8 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_passcode_attempt_count")
-                    .table(Passcode::Table)
-                    .col(Passcode::AttemptCount)
+                    .table(Passcodes::Table)
+                    .col(Passcodes::AttemptCount)
                     .to_owned(),
             )
             .await?;
@@ -84,8 +84,8 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_passcode_resend_count")
-                    .table(Passcode::Table)
-                    .col(Passcode::ResendCount)
+                    .table(Passcodes::Table)
+                    .col(Passcodes::ResendCount)
                     .to_owned(),
             )
             .await?;
@@ -94,14 +94,14 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager.drop_table(Table::drop().table(Passcode::Table).to_owned()).await?;
-        manager.drop_table(Table::drop().table(User::Table).to_owned()).await?;
+        manager.drop_table(Table::drop().table(Passcodes::Table).to_owned()).await?;
+        manager.drop_table(Table::drop().table(Users::Table).to_owned()).await?;
         Ok(())
     }
 }
 
 #[derive(Iden)]
-enum User {
+enum Users {
     Table,
     Id,
     Email,
@@ -111,7 +111,7 @@ enum User {
 }
 
 #[derive(Iden)]
-enum Passcode {
+enum Passcodes {
     Table,
     Id,
     UserId,
