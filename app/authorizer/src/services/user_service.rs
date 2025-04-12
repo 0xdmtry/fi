@@ -1,7 +1,7 @@
 use sea_orm::DbConn;
 use crate::repositories::user_repository;
-use crate::repositories::passcode_repository;
 use crate::services::email_client;
+use crate::services::passcode_service;
 
 pub async fn process_join_request(email: &str, db: &DbConn) -> anyhow::Result<()> {
     let normalized_email = email.to_lowercase();
@@ -11,7 +11,7 @@ pub async fn process_join_request(email: &str, db: &DbConn) -> anyhow::Result<()
         None => user_repository::insert_new_user(db, &normalized_email).await?,
     };
 
-    let passcode = passcode_repository::generate_and_insert(db, &user).await?;
+    let passcode = passcode_service::get_or_create_passcode(db, &user).await?;
 
     email_client::send_passcode_email(&user.email, &passcode.code).await?;
 
