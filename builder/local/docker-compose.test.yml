@@ -1,0 +1,80 @@
+services:
+  test-app-authorizer:
+    container_name: test-app-authorizer
+    build:
+      context: ../../app/authorizer
+      dockerfile: Authorizer.dev.dockerfile
+    restart: always
+    ports:
+      - "8100:8000"
+    volumes:
+      - ../../app/authorizer:/app
+      - /app/target
+    depends_on:
+      test-db-app-authorizer:
+        condition: service_started
+      test-app-emailer:
+        condition: service_started
+    networks:
+      - test-fi-network
+
+  test-db-app-authorizer:
+    container_name: test-db-app-authorizer
+    image: postgres:17.4
+    restart: always
+    environment:
+      POSTGRES_DB: authorizer
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - .dbdata/postgres/authorizer/:/var/lib/postgresql/data
+    ports:
+      - "5532:5432"
+    networks:
+      - test-fi-network
+
+  test-app-emailer:
+    container_name: test-app-emailer
+    build:
+      context: ../../app/emailer
+      dockerfile: Emailer.dev.dockerfile
+    restart: always
+    depends_on:
+      db-app-emailer:
+        condition: service_started
+    ports:
+      - "8101:8001"
+    volumes:
+      - ../../app/emailer:/app
+      - /app/target
+    networks:
+      - test-fi-network
+
+  test-db-app-emailer:
+    container_name: test-db-app-emailer
+    image: postgres:17.4
+    restart: always
+    environment:
+      POSTGRES_DB: emailer
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - .dbdata/postgres/emailer/:/var/lib/postgresql/data
+    ports:
+      - "5533:5432"
+    networks:
+      - test-fi-network
+
+  test-mailhog:
+    container_name: test-mailhog
+    image: "mailhog/mailhog:latest"
+    ports:
+      - "1125:1025"
+      - "8125:8025"
+    networks:
+      - test-fi-network
+
+
+networks:
+  test-fi-network:
+    driver: bridge
