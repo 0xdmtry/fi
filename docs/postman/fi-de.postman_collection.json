@@ -7,13 +7,13 @@
 	},
 	"item": [
 		{
-			"name": "local",
+			"name": "dev",
 			"item": [
 				{
 					"name": "app",
 					"item": [
 						{
-							"name": "api",
+							"name": "authorizer",
 							"item": [
 								{
 									"name": "v1",
@@ -24,13 +24,40 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{local_api_host}}/v1/ping",
+													"raw": "{{dev_authorizer_host}}/v1/ping",
 													"host": [
-														"{{local_api_host}}"
+														"{{dev_authorizer_host}}"
 													],
 													"path": [
 														"v1",
 														"ping"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "join",
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"email\": \"example@example.com\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{dev_authorizer_host}}/v1/join",
+													"host": [
+														"{{dev_authorizer_host}}"
+													],
+													"path": [
+														"v1",
+														"join"
 													]
 												}
 											},
@@ -52,9 +79,9 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{local_emailer_host}}/v1/ping",
+													"raw": "{{dev_emailer_host}}/v1/ping",
 													"host": [
-														"{{local_emailer_host}}"
+														"{{dev_emailer_host}}"
 													],
 													"path": [
 														"v1",
@@ -79,9 +106,9 @@
 													}
 												},
 												"url": {
-													"raw": "{{local_emailer_host}}/v1/passcode",
+													"raw": "{{dev_emailer_host}}/v1/passcode",
 													"host": [
-														"{{local_emailer_host}}"
+														"{{dev_emailer_host}}"
 													],
 													"path": [
 														"v1",
@@ -96,6 +123,15 @@
 							]
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "test",
+			"item": [
+				{
+					"name": "app",
+					"item": []
 				}
 			]
 		}
@@ -124,13 +160,23 @@
 	],
 	"variable": [
 		{
-			"key": "local_api_host",
+			"key": "dev_authorizer_host",
 			"value": "http://localhost:8000",
 			"type": "string"
 		},
 		{
-			"key": "local_emailer_host",
+			"key": "dev_emailer_host",
 			"value": "http://localhost:8001",
+			"type": "string"
+		},
+		{
+			"key": "test_authorizer_host",
+			"value": "http://localhost:8100",
+			"type": "string"
+		},
+		{
+			"key": "test_emailer_host",
+			"value": "http://localhost:8101",
 			"type": "string"
 		}
 	]

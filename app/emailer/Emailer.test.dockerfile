@@ -10,7 +10,7 @@ WORKDIR /app
 # Copy everything from the context (which is app/api)
  # ✅ includes Cargo.toml and src/
 COPY . .
-COPY .dev.env .env
+COPY .test.env .env
 
 # Pre-fetch dependencies
 RUN cargo fetch

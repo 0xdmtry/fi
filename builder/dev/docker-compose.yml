@@ -8,7 +8,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ../../app/authorizer:/app
+      - ../../app/authorizer/src:/app/src
+      - ../../app/authorizer/migration:/app/migration
+      - ../../app/authorizer/tests:/app/tests
+      - ../../app/authorizer/Cargo.toml:/app/Cargo.toml
+      - ../../app/authorizer/Cargo.lock:/app/Cargo.lock
       - /app/target
     depends_on:
       db-app-authorizer:
@@ -27,7 +31,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:
-      - .dbdata/postgres/authorizer/:/var/lib/postgresql/data
+      - .dbdata/postgres/dev/authorizer/:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
@@ -45,7 +49,11 @@ services:
     ports:
       - "8001:8001"
     volumes:
-      - ../../app/emailer:/app
+      - ../../app/emailer/src:/app/src
+      - ../../app/emailer/migration:/app/migration
+      - ../../app/emailer/tests:/app/tests
+      - ../../app/emailer/Cargo.toml:/app/Cargo.toml
+      - ../../app/emailer/Cargo.lock:/app/Cargo.lock
       - /app/target
     networks:
       - fi-network
@@ -59,7 +67,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:
-      - .dbdata/postgres/emailer/:/var/lib/postgresql/data
+      - .dbdata/postgres/dev/emailer/:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     networks:

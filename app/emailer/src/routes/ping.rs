@@ -5,5 +5,5 @@ pub fn routes() -> Router {
 }
 
 async fn ping() -> impl IntoResponse {
-    "emailer-v0.2.0"
+    "emailer-v0.2.1"
 }

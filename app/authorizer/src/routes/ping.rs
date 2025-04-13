@@ -5,5 +5,5 @@ pub fn routes() -> Router {
 }
 
 async fn ping() -> impl IntoResponse {
-    "authorizer-v0.3.4"
+    "authorizer-v0.3.6"
 }
