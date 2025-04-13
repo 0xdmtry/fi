@@ -131,7 +131,64 @@
 			"item": [
 				{
 					"name": "app",
-					"item": []
+					"item": [
+						{
+							"name": "authorizer",
+							"item": [
+								{
+									"name": "v1",
+									"item": [
+										{
+											"name": "ping",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{test_authorizer_host}}/v1/ping",
+													"host": [
+														"{{test_authorizer_host}}"
+													],
+													"path": [
+														"v1",
+														"ping"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "emailer",
+							"item": [
+								{
+									"name": "v1",
+									"item": [
+										{
+											"name": "ping",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{test_emailer_host}}/v1/ping",
+													"host": [
+														"{{test_emailer_host}}"
+													],
+													"path": [
+														"v1",
+														"ping"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
 				}
 			]
 		}
