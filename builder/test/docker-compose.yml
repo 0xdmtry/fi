@@ -27,11 +27,11 @@ services:
     image: postgres:17.4
     restart: always
     environment:
-      POSTGRES_DB: authorizer
+      POSTGRES_DB: test_authorizer
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:
-      - .dbdata/postgres/test/authorizer/:/var/lib/postgresql/data
+      - .dbdata/postgres/test_authorizer/:/var/lib/postgresql/data
     ports:
       - "5532:5432"
     networks:
@@ -63,11 +63,11 @@ services:
     image: postgres:17.4
     restart: always
     environment:
-      POSTGRES_DB: emailer
+      POSTGRES_DB: test_emailer
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:
-      - .dbdata/postgres/test/emailer/:/var/lib/postgresql/data
+      - .dbdata/postgres/test_emailer/:/var/lib/postgresql/data
     ports:
       - "5533:5432"
     networks:

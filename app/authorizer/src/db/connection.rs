@@ -12,20 +12,17 @@ pub async fn establish_connection() -> DbConn {
 
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    for attempt in 0..MAX_RETRIES {
+    for attempt in 1..=MAX_RETRIES {
         match Database::connect(&db_url).await {
-            Ok(conn) => {
-                return conn;
-            }
+            Ok(conn) => return conn,
             Err(e) => {
+                eprintln!("🔁 Attempt {}/{} failed to connect to DB: {}", attempt, MAX_RETRIES, e);
                 if attempt < MAX_RETRIES {
                     sleep(Duration::from_secs(RETRY_DELAY_SECS)).await;
-                } else {
-                    panic!("❌ Could not connect to DB after {MAX_RETRIES} attempts: {e}");
                 }
             }
         }
     }
-    
-    unreachable!("DB connection retry loop failed unexpectedly");
+
+    panic!("❌ Could not connect to DB after {} attempts", MAX_RETRIES);
 }
