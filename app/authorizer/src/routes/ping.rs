@@ -1,6 +1,7 @@
 use axum::{Router, routing::get, response::IntoResponse};
+use crate::state::AppState;
 
-pub fn routes() -> Router {
+pub fn routes() -> Router<AppState> {
     Router::new().route("/ping", get(ping))
 }
 

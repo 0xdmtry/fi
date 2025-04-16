@@ -1,3 +1,4 @@
+use axum::ServiceExt;
 use authorizer::app;
 
 #[tokio::main]
@@ -10,7 +11,7 @@ async fn main() {
         .await
         .expect("Failed to bind port");
 
-    axum::serve(listener, app)
+    axum::serve(listener, app.into_make_service())
         .await
         .expect("Server failed");
 }

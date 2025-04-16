@@ -3,7 +3,7 @@ use crate::repositories::user_repository;
 use crate::services::email_client;
 use crate::services::passcode_service;
 
-pub async fn process_join_request(email: &str, db: &DbConn) -> anyhow::Result<()> {
+pub async fn process_join_request(db: &DbConn, email: &str) -> anyhow::Result<()> {
     let normalized_email = email.to_lowercase();
 
     let user = match user_repository::find_by_email(db, &normalized_email).await? {
