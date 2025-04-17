@@ -16,7 +16,7 @@ pub async fn join_handler(
 
     let normalized_email = normalize_email(&payload.email);
 
-    process_join_request(&app_state.db_conn, &normalized_email)
+    process_join_request(&app_state.db_conn, &app_state.config, &normalized_email)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Internal error: {e}")))?;
 

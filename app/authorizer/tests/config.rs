@@ -15,11 +15,12 @@ fn clear_env() {
         "EMAILER_URL",
         "EMAILER_TEST_URL",
         "RUN_MIGRATIONS",
+        "DB_CONN_MAX_ATTEMPTS",
+        "DB_CONN_RETRY_DELAY_SECONDS",
     ] {
         unsafe { env::remove_var(key) };
     }
 }
-
 
 #[test]
 #[serial]
@@ -38,6 +39,8 @@ fn test_defaults_applied() {
     assert_eq!(config.emailer_url, "");
     assert_eq!(config.emailer_test_url, "");
     assert!(!config.run_migrations);
+    assert_eq!(config.db_conn_max_attempts, 10);
+    assert_eq!(config.db_conn_retry_delay_seconds, 2);
 }
 
 #[test]
@@ -57,6 +60,8 @@ fn test_valid_env_values() {
         env::set_var("EMAILER_URL", "http://emailer.dev");
         env::set_var("EMAILER_TEST_URL", "http://emailer.test");
         env::set_var("RUN_MIGRATIONS", "true");
+        env::set_var("DB_CONN_MAX_ATTEMPTS", "20");
+        env::set_var("DB_CONN_RETRY_DELAY_SECONDS", "3");
     }
 
     let config = AppConfig::from_env();
@@ -72,6 +77,8 @@ fn test_valid_env_values() {
     assert_eq!(config.emailer_url, "http://emailer.dev");
     assert_eq!(config.emailer_test_url, "http://emailer.test");
     assert!(config.run_migrations);
+    assert_eq!(config.db_conn_max_attempts, 20);
+    assert_eq!(config.db_conn_retry_delay_seconds, 3);
 }
 
 #[test]
@@ -133,6 +140,8 @@ fn test_zero_or_invalid_individual_fallbacks() {
 #[test]
 #[serial]
 fn test_run_migrations_variants() {
+    clear_env();
+
     unsafe {
         env::set_var("RUN_MIGRATIONS", "1");
         assert!(AppConfig::from_env().run_migrations);
@@ -146,4 +155,34 @@ fn test_run_migrations_variants() {
         env::set_var("RUN_MIGRATIONS", "maybe");
         assert!(!AppConfig::from_env().run_migrations);
     }
+}
+
+#[test]
+#[serial]
+fn test_db_conn_config_valid_values() {
+    clear_env();
+
+    unsafe {
+        env::set_var("DB_CONN_MAX_ATTEMPTS", "15");
+        env::set_var("DB_CONN_RETRY_DELAY_SECONDS", "5");
+    }
+
+    let config = AppConfig::from_env();
+    assert_eq!(config.db_conn_max_attempts, 15);
+    assert_eq!(config.db_conn_retry_delay_seconds, 5);
+}
+
+#[test]
+#[serial]
+fn test_db_conn_config_invalid_values_fallback() {
+    clear_env();
+
+    unsafe {
+        env::set_var("DB_CONN_MAX_ATTEMPTS", "0");
+        env::set_var("DB_CONN_RETRY_DELAY_SECONDS", "-1");
+    }
+
+    let config = AppConfig::from_env();
+    assert_eq!(config.db_conn_max_attempts, 10);
+    assert_eq!(config.db_conn_retry_delay_seconds, 2);
 }

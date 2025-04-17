@@ -1,13 +1,12 @@
 use reqwest::Client;
 use serde_json::json;
 use anyhow::{anyhow, Result};
+use crate::config::AppConfig;
 
-pub async fn send_passcode_email(email: &str, passcode: &str) -> anyhow::Result<()> {
-    let emailer_url = std::env::var("EMAILER_URL")
-                        .unwrap_or_else(|_| "http://localhost:8001".to_string());
+pub async fn send_passcode_email(config: &AppConfig, email: &str, passcode: &str) -> anyhow::Result<()> {
 
     let client = Client::new();
-    let res = client.post(format!("{emailer_url}/v1/passcode"))
+    let res = client.post(format!("{}/v1/passcode", config.emailer_url))
                 .json(&json!({
                     "email": email,
                     "passcode": passcode,

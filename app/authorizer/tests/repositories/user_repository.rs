@@ -2,13 +2,12 @@ use authorizer::repositories::user_repository;
 use authorizer::models::user;
 use sea_orm::{Database, DbConn, EntityTrait};
 use uuid::Uuid;
+use authorizer::config::AppConfig;
 
 #[tokio::test]
 async fn test_insert_and_find_user() {
-    // Load DATABASE_URL from `.test.env`
-    dotenvy::from_filename(".test.env").ok();
-    let db_url = std::env::var("DATABASE_TEST_URL").expect("DATABASE_TEST_URL must be set");
-    let db: DbConn = Database::connect(&db_url).await.expect("failed to connect");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
+    let db: DbConn = Database::connect(&config.database_test_url).await.expect("failed to connect");
 
     user::Entity::delete_many().exec(&db).await.expect("cleanup failed");
 
@@ -29,9 +28,8 @@ async fn test_insert_and_find_user() {
 
 #[tokio::test]
 async fn test_email_uniqueness_violation() {
-    dotenvy::from_filename(".test.env").ok();
-    let db_url = std::env::var("DATABASE_TEST_URL").expect("DATABASE_TEST_URL must be set");
-    let db: DbConn = Database::connect(&db_url).await.expect("failed to connect");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
+    let db: DbConn = Database::connect(&config.database_test_url).await.expect("failed to connect");
 
     user::Entity::delete_many().exec(&db).await.expect("cleanup failed");
 
@@ -55,10 +53,8 @@ async fn test_email_uniqueness_violation() {
 
 #[tokio::test]
 async fn test_email_max_length_constraint() {
-    dotenvy::from_filename(".test.env").ok();
-
-    let db_url = std::env::var("DATABASE_TEST_URL").expect("DATABASE_TEST_URL must be set");
-    let db: DbConn = Database::connect(&db_url).await.expect("failed to connect");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
+    let db: DbConn = Database::connect(&config.database_test_url).await.expect("failed to connect");
 
     user::Entity::delete_many().exec(&db).await.expect("cleanup failed");
     

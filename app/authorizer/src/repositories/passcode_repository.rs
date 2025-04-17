@@ -4,6 +4,7 @@ use chrono::{Duration, Utc};
 use crate::models::passcode;
 use crate::models::user;
 use rand::Rng;
+use crate::config::AppConfig;
 
 pub async fn find_active_by_user_id(db: &DbConn, user_id: Uuid) -> anyhow::Result<Option<passcode::Model>> {
     let now = Utc::now();
@@ -19,12 +20,12 @@ pub async fn find_active_by_user_id(db: &DbConn, user_id: Uuid) -> anyhow::Resul
     Ok(active)
 }
 
-pub async fn generate_and_insert(db: &DbConn, user: &user::Model) -> anyhow::Result<passcode::Model> {
+pub async fn generate_and_insert(db: &DbConn, config: &AppConfig, user: &user::Model) -> anyhow::Result<passcode::Model> {
     let passcode = {
         let mut rng = rand::rng();
-        format!("{:04}", rng.gen_range(1000..10000))
+        format!("{:04}", rng.random_range(config.passcode_min_range..config.passcode_max_range))
     };
-    let expires = Utc::now() + Duration::minutes(5);
+    let expires = Utc::now() + Duration::seconds(config.passcode_ttl_seconds);
 
     let new_passcode = passcode::ActiveModel {
         id: Set(Uuid::new_v4()),
