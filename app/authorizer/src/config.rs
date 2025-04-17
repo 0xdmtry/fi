@@ -2,63 +2,134 @@ use std::env;
 
 #[derive(Debug, Clone)]
 pub struct AppConfig {
-    pub passcode_ttl_seconds: i64, // default 300
-    pub passcode_len: i32, // default 4
-    pub passcode_min_range: i32, // default 1000
-    pub passcode_max_range: i32, // default 10000
-    pub passcode_max_attempts: i32, // default 3
-    pub passcode_max_resends: i32, // default 3
+    pub passcode_ttl_seconds: u64,
 
-    pub database_url: String, // default empty
-    pub database_test_url: String, // default empty
+    pub passcode_len: u32,
 
-    pub emailer_url: String, // default empty
-    pub emailer_test_url: String, // default empty
-    pub run_migrations: bool,  // default false
+    pub passcode_min_range: u64,
+    pub passcode_max_range: u64,
+
+    pub passcode_max_attempts: u32,
+    pub passcode_max_resends: u32,
+
+    pub database_url: String,
+    pub database_test_url: String,
+
+    pub emailer_url: String,
+    pub emailer_test_url: String,
+
+    pub run_migrations: bool,
 }
 
 impl AppConfig {
     pub fn from_env() -> Self {
         dotenvy::dotenv().ok();
 
-        Self {
-            passcode_ttl_seconds: env::var("PASSCODE_TTL_SECONDS")
-                                    .ok()
-                                    .and_then(|v| v.parse().ok())
-                                    .unwrap_or(300),
-            passcode_len: env::var("PASSCODE_LEN")
+        let default_len = 4;
+
+        let default_min_range = 10u64.pow(default_len - 1);
+        let default_max_range = 10u64.pow(default_len);
+
+        let min_diff = 9000;
+
+        let default_ttl_seconds = 300;
+        let default_max_attempts = 3;
+        let default_max_resends = 3;
+
+        let len = env::var("PASSCODE_LEN")
+                    .ok()
+                    .and_then(|v| v.parse::<u32>().ok());
+
+        let min_range = env::var("PASSCODE_MIN_RANGE")
+                        .ok()
+                        .and_then(|v| v.parse::<u64>().ok());
+
+        let max_range = env::var("PASSCODE_MAX_RANGE")
                             .ok()
-                            .and_then(|v| v.parse().ok())
-                            .unwrap_or(4),
-            passcode_min_range: env::var("PASSCODE_MIN_RANGE")
-                                    .ok()
-                                    .and_then(|v| v.parse().ok())
-                                    .unwrap_or(1000),
-            passcode_max_range: env::var("PASSCODE_MAX_RANGE")
-                                    .ok()
-                                    .and_then(|v| v.parse().ok())
-                                    .unwrap_or(10000),
-                
-            passcode_max_attempts: env::var("PASSCODE_MAX_ATTEMPTS")
-                                        .ok()
-                                        .and_then(|v| v.parse().ok())
-                                        .unwrap_or(3),
-            passcode_max_resends: env::var("PASSCODE_MAX_RESENDS")
-                                    .ok()
-                                    .and_then(|v| v.parse().ok())
-                                    .unwrap_or(3),
-            
+                            .and_then(|v| v.parse::<u64>().ok());
+
+        let ttl_seconds = env::var("PASSCODE_TTL_SECONDS")
+                            .ok()
+                            .and_then(|v| v.parse::<u64>().ok());
+
+        let max_attempts = env::var("PASSCODE_MAX_ATTEMPTS")
+                            .ok()
+                            .and_then(|v| v.parse::<u32>().ok());
+
+        let max_resends = env::var("PASSCODE_MAX_RESENDS")
+                        .ok()
+                        .and_then(|v| v.parse::<u32>().ok());
+
+        let (passcode_len, passcode_min_range, passcode_max_range) = match (len, min_range, max_range) {
+            (Some(len), Some(min), Some(max))
+                if (4..=8).contains(&len)
+                    && min >= 10u64.pow(len - 1)
+                    && max >= min
+                    && max >= 10u64.pow(len)
+                    && (max - min) >= min_diff =>
+            {
+                (len, min, max)
+            }
+            _ => {
+                eprintln!(
+                    "⚠️ Invalid passcode config detected: PASSCODE_LEN={:?}, MIN={:?}, MAX={:?}. Falling back to defaults.",
+                    len, min_range, max_range
+                );
+                (default_len, default_min_range, default_max_range)
+            }
+        };
+
+        let passcode_ttl_seconds = match (ttl_seconds) {
+            (Some(seconds))
+                if seconds > 0 => 
+            {
+                    seconds
+            }
+            _ => {
+                default_ttl_seconds
+            }
+        };
+
+        let passcode_max_attempts = match (max_attempts) {
+            (Some(attempts))
+                if attempts > 0 => 
+            {
+                attempts
+            }
+            _ => {
+                default_max_attempts
+            }
+        };
+
+        let passcode_max_resends = match (max_resends) {
+            (Some(resends))
+                if resends > 0 => 
+            {
+                resends
+            }
+            _ => {
+                default_max_resends
+            }
+        };
+
+        Self {
+            passcode_ttl_seconds,
+            passcode_len,
+            passcode_min_range,
+            passcode_max_range,
+
+            passcode_max_attempts,
+            passcode_max_resends,
+
             database_url: env::var("DATABASE_URL").unwrap_or_default(),
             database_test_url: env::var("DATABASE_TEST_URL").unwrap_or_default(),
-
 
             emailer_url: env::var("EMAILER_URL").unwrap_or_default(),
             emailer_test_url: env::var("EMAILER_TEST_URL").unwrap_or_default(),
 
             run_migrations: env::var("RUN_MIGRATIONS")
-                                .map(|v| v == "true" || v == "1")
-                                .unwrap_or(false),
+                .map(|v| v == "true" || v == "1")
+                .unwrap_or(false),
         }
-
     }
 }
