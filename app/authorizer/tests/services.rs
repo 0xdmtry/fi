@@ -1,2 +1,5 @@
 #[path = "services/passcode_service.rs"]
-mod services;
+mod passcode_service;
+
+#[path = "services/email_client.rs"]
+mod email_client;
