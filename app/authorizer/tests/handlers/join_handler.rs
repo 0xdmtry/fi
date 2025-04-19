@@ -99,3 +99,31 @@ async fn test_join_uppercase_email_normalized_returns_200() {
     let res = client.post(BASE_URL).json(&payload).send().await.unwrap();
     assert_eq!(res.status(), StatusCode::OK);
 }
+
+#[tokio::test]
+#[serial]
+async fn test_join_same_email_twice_returns_200() {
+    let client = Client::new();
+    let test_email = format!("repeat-{}@example.com", Uuid::new_v4());
+    let payload = json!({ "email": test_email });
+
+    // First request
+    let res1 = client
+        .post(BASE_URL)
+        .json(&payload)
+        .send()
+        .await
+        .expect("first join failed");
+
+    assert_eq!(res1.status(), StatusCode::OK);
+
+    // Second request with same email
+    let res2 = client
+        .post(BASE_URL)
+        .json(&payload)
+        .send()
+        .await
+        .expect("second join failed");
+
+    assert_eq!(res2.status(), StatusCode::OK);
+}
