@@ -1,5 +1,5 @@
-pub mod emailer;
-pub mod mailhog;
+pub mod emailer_service;
+pub mod mailhog_service;
 
-pub use emailer::{Emailer};
-pub use mailhog::MailhogEmailer;
+pub use emailer_service::{Emailer};
+pub use mailhog_service::MailhogEmailer;

@@ -1,9 +1,5 @@
-mod app;
-mod routes;
-mod services;
-mod handlers;
-mod models;
-mod db;
+use axum::ServiceExt;
+use emailer::app;
 
 #[tokio::main]
 async fn main() {
@@ -15,7 +11,7 @@ async fn main() {
         .await
         .expect("Failed to bind port");
 
-    axum::serve(listener, app)
+    axum::serve(listener, app.into_make_service())
         .await
         .expect("Server failed");
 }

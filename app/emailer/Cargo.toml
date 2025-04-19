@@ -50,5 +50,6 @@ pretty_assertions = "1.4.1"                                             # Pretty
 test-case = "3.3.1"                                                     # Parameterized test cases (multiple inputs per test)
 fake = "4.2.0"                                                          # Generate fake test data (names, emails, etc.)
 mockall = "0.13.1"                                                      # Create mocks for testing trait-based services
+serial_test = "3.2.0"
 
 

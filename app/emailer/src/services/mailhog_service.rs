@@ -1,5 +1,5 @@
 use anyhow::Result;
-use super::emailer::Emailer;
+use super::emailer_service::Emailer;
 
 pub struct MailhogEmailer;
 
