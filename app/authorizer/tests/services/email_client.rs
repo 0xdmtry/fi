@@ -13,7 +13,8 @@ fn test_code() -> &'static str {
 #[tokio::test]
 #[serial]
 async fn test_send_passcode_success() {
-    let config = AppConfig::from_env_with_custom_file(".test.env");
+    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    config.emailer_url = "http://localhost:8101".to_string();
 
     let result = email_client::send_passcode_email(&config, test_email(), test_code()).await;
 
@@ -28,6 +29,7 @@ async fn test_send_passcode_success() {
 async fn test_send_passcode_fails_on_404() {
     // Create config with broken route
     let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    config.emailer_url = "http://localhost:8101".to_string();
     config.emailer_url = format!("{}/v1/non-existent", config.emailer_url);
 
     let result = email_client::send_passcode_email(&config, test_email(), test_code()).await;
