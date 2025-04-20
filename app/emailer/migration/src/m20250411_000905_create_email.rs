@@ -25,9 +25,9 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Emails::MessageId).string().null())
                     .col(ColumnDef::new(Emails::RetryCount).integer().not_null())
                     .col(ColumnDef::new(Emails::SentByFallback).boolean().not_null())
-                    .col(ColumnDef::new(Emails::OpenedAt).timestamp().null())
-                    .col(ColumnDef::new(Emails::CreatedAt).timestamp().not_null())
-                    .col(ColumnDef::new(Emails::UpdatedAt).timestamp().not_null())
+                    .col(ColumnDef::new(Emails::OpenedAt).timestamp_with_time_zone().null())
+                    .col(ColumnDef::new(Emails::CreatedAt).timestamp_with_time_zone().not_null())
+                    .col(ColumnDef::new(Emails::UpdatedAt).timestamp_with_time_zone().not_null())
                     .to_owned(),
             )
             .await

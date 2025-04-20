@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use crate::models::{EmailType, Provider, email};
 
+#[derive(Clone)]
 pub struct SaveEmailArgs {
     pub recipient: String,
     pub email_type: EmailType,
