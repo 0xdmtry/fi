@@ -1,9 +1,8 @@
-use std::env;
 use crate::models::Provider;
+use std::env;
 
 #[derive(Debug, Clone)]
 pub struct AppConfig {
-
     pub email_provider: Provider,
 
     pub max_reties: i32,
@@ -20,7 +19,7 @@ pub struct AppConfig {
 impl AppConfig {
     pub fn from_env() -> Self {
         dotenvy::dotenv().ok();
-        
+
         let default_max_retries: i32 = 10;
 
         let default_db_conn_max_attempts: u32 = 10;
@@ -57,9 +56,8 @@ impl AppConfig {
             (Some(seconds)) if seconds > 0 => seconds,
             _ => default_db_conn_retry_delay_seconds,
         };
-        
-        Self {
 
+        Self {
             email_provider,
 
             max_reties,

@@ -13,9 +13,20 @@ pub async fn send_passcode_handler(
         return Err((StatusCode::BAD_REQUEST, format!("Validation error: {}", e)));
     }
 
-    app_state.emailer
-        .send_passcode(&payload.email, &payload.passcode)
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Send error: {}", e)))?;
+    app_state
+        .emailer
+        .send_and_save_passcode_email(
+            &app_state.config,
+            &app_state.db_conn,
+            &payload.email,
+            &payload.passcode,
+        )
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Send error: {}", e),
+            )
+        })?;
 
     Ok(StatusCode::OK)
 }

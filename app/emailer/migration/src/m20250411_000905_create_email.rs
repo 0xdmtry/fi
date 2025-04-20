@@ -12,28 +12,23 @@ impl MigrationTrait for Migration {
                     .table(Emails::Table)
                     .if_not_exists()
                     .col(ColumnDef::new(Emails::Id).uuid().not_null().primary_key())
-
                     .col(ColumnDef::new(Emails::Recipient).string_len(254).not_null())
-                    .col(ColumnDef::new(Emails::Subject).string().null())
-
                     .col(ColumnDef::new(Emails::EmailType).string_len(32).not_null())
+                    .col(ColumnDef::new(Emails::Subject).string().null())
+                    .col(ColumnDef::new(Emails::Content).string().null())
                     .col(ColumnDef::new(Emails::TemplateType).string().null())
                     .col(ColumnDef::new(Emails::TemplateLanguage).string().null())
                     .col(ColumnDef::new(Emails::RenderedWith).string().null())
-
                     .col(ColumnDef::new(Emails::Provider).string_len(32).not_null())
                     .col(ColumnDef::new(Emails::Status).string_len(32).not_null())
                     .col(ColumnDef::new(Emails::ErrorMessage).text().null())
                     .col(ColumnDef::new(Emails::MessageId).string().null())
-
                     .col(ColumnDef::new(Emails::RetryCount).integer().not_null())
                     .col(ColumnDef::new(Emails::SentByFallback).boolean().not_null())
-
                     .col(ColumnDef::new(Emails::OpenedAt).timestamp().null())
                     .col(ColumnDef::new(Emails::CreatedAt).timestamp().not_null())
                     .col(ColumnDef::new(Emails::UpdatedAt).timestamp().not_null())
-
-                    .to_owned()
+                    .to_owned(),
             )
             .await
     }
@@ -51,8 +46,11 @@ enum Emails {
     Id,
 
     Recipient,
-    Subject,
     EmailType,
+
+    Subject,
+    Content,
+
     TemplateType,
     TemplateLanguage,
     RenderedWith,

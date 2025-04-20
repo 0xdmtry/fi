@@ -1,18 +1,19 @@
+use crate::models::{EmailType, Provider};
 use sea_orm::entity::prelude::*;
 use uuid::Uuid;
-use crate::models::{EmailType, Provider};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "emails")]
 pub struct Model {
-
     #[sea_orm(primary_key)]
     pub id: Uuid,
 
     pub recipient: String,
+    pub email_type: EmailType,
 
     pub subject: Option<String>,
-    pub email_type: EmailType,
+    pub content: Option<String>,
+
     pub template_type: Option<String>,
     pub template_language: Option<String>,
     pub rendered_with: Option<String>,
