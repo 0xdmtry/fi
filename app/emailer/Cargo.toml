@@ -44,6 +44,10 @@ opentelemetry-jaeger = "0.22.0"                                         # Jaeger
 # --- Migration ---
 migration = { path = "./migration" }
 
+# --- Email ---
+lettre = { version = "0.11.15", features = ["smtp-transport", "builder", "tokio1", "tokio1-native-tls"] }
+askama = "0.13.1"
+
 [dev-dependencies]
 # --- Dev-only: for advanced testing patterns ---
 pretty_assertions = "1.4.1"                                             # Pretty diff output when assertions fail in tests

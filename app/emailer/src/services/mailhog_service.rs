@@ -1,5 +1,10 @@
 use anyhow::{Result, anyhow};
+use askama::Template;
 use chrono::Utc;
+use lettre::{
+    Message, SmtpTransport, Transport,
+    message::{MultiPart, SinglePart, header},
+};
 use sea_orm::DatabaseConnection;
 use std::sync::Arc;
 
@@ -15,8 +20,46 @@ impl MailhogEmailer {
         Self
     }
 }
+
+#[derive(Template)]
+#[template(path = "passcode/html/default/default_passcode_template.html")]
+struct PasscodeHtmlTemplate<'a> {
+    passcode: &'a str,
+}
+
+#[derive(Template)]
+#[template(path = "passcode/txt/default/default_passcode_template.txt")]
+struct PasscodePlainTemplate<'a> {
+    passcode: &'a str,
+}
 impl Emailer for MailhogEmailer {
     fn send_passcode_email(&self, email: &str, passcode: &str) -> Result<()> {
+        let html = PasscodeHtmlTemplate { passcode }
+            .render()
+            .map_err(|e| anyhow!("Failed to render HTML template: {e}"))?;
+
+        let plain = PasscodePlainTemplate { passcode }
+            .render()
+            .map_err(|e| anyhow!("Failed to render plain text template: {e}"))?;
+
+        let message = Message::builder()
+            .from("noreply@example.com".parse()?)
+            .to(email.parse()?)
+            .subject("Your login code")
+            .multipart(
+                MultiPart::alternative()
+                    .singlepart(SinglePart::plain(plain))
+                    .singlepart(SinglePart::html(html)),
+            )?;
+
+        let mailer = SmtpTransport::builder_dangerous("mailhog")
+            .port(1025)
+            .build();
+
+        mailer
+            .send(&message)
+            .map_err(|e| anyhow!("Mail send error: {e}"))?;
+
         // Simulated send
         println!("[MAILHOG] Sending passcode {} to {}", passcode, email);
         Ok(())
