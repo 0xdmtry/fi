@@ -1,4 +1,8 @@
+use sea_orm::sea_query::extension::postgres::Type;
+use sea_orm::sea_query::BinOper;
+use sea_orm::sea_query::Expr;
 use sea_orm_migration::prelude::*;
+use sea_query::Expr as QExpr;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -12,7 +16,12 @@ impl MigrationTrait for Migration {
                     .table(Emails::Table)
                     .if_not_exists()
                     .col(ColumnDef::new(Emails::Id).uuid().not_null().primary_key())
-                    .col(ColumnDef::new(Emails::Recipient).string_len(254).not_null())
+                    .col(
+                        ColumnDef::new(Emails::Recipient)
+                            .string_len(254)
+                            .not_null()
+                            .extra("CHECK (length(recipient) > 0)"),
+                    )
                     .col(ColumnDef::new(Emails::EmailType).string_len(32).not_null())
                     .col(ColumnDef::new(Emails::Subject).string().null())
                     .col(ColumnDef::new(Emails::Content).string().null())
@@ -25,9 +34,21 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Emails::MessageId).string().null())
                     .col(ColumnDef::new(Emails::RetryCount).integer().not_null())
                     .col(ColumnDef::new(Emails::SentByFallback).boolean().not_null())
-                    .col(ColumnDef::new(Emails::OpenedAt).timestamp_with_time_zone().null())
-                    .col(ColumnDef::new(Emails::CreatedAt).timestamp_with_time_zone().not_null())
-                    .col(ColumnDef::new(Emails::UpdatedAt).timestamp_with_time_zone().not_null())
+                    .col(
+                        ColumnDef::new(Emails::OpenedAt)
+                            .timestamp_with_time_zone()
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(Emails::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Emails::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await

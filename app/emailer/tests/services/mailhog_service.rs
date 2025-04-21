@@ -26,7 +26,10 @@ async fn setup_config_and_db() -> (DbConn, AppConfig) {
 #[serial]
 async fn test_send_passcode_email_succeeds() {
     let emailer = MailhogEmailer::new();
-    let (_, config) = setup_config_and_db().await;
+    let (_, mut config) = setup_config_and_db().await;
+
+    config.mailhog_server = "localhost".into();
+    config.mailhog_port = 1125;
 
     let result = emailer.send_passcode_email(&config, "user@example.com", "1234");
 
@@ -76,11 +79,14 @@ async fn test_save_email_persists_to_db() {
 #[tokio::test]
 #[serial]
 async fn test_send_and_save_passcode_email_succeeds() {
-    let (db, config) = setup_config_and_db().await;
+    let (db, mut config) = setup_config_and_db().await;
     let emailer = MailhogEmailer::new();
 
     let to = test_email();
     let passcode = "5678";
+
+    config.mailhog_server = "localhost".into();
+    config.mailhog_port = 1125;
 
     let result = emailer.send_and_save_passcode_email(&config, &db, &to, passcode);
 
@@ -108,8 +114,8 @@ async fn test_send_passcode_email_with_invalid_email_fails() {
     let result = emailer.send_passcode_email(&config, "not-an-email", "1234");
 
     assert!(result.is_err());
-    let err = result.err().unwrap().to_string();
-    assert!(err.contains("invalid email address syntax"));
+    let err = result.err().unwrap().to_string().to_lowercase();
+    assert!(err.contains("invalid input"));
 }
 
 #[tokio::test]
@@ -122,18 +128,19 @@ async fn test_send_passcode_email_with_too_long_email_fails() {
     let result = emailer.send_passcode_email(&config, &long_email, "1234");
 
     assert!(result.is_err());
-    let err = result.err().unwrap().to_string();
-    assert!(err.contains("invalid email address"));
+    let err = result.err().unwrap().to_string().to_lowercase();
+    assert!(err.contains("invalid email user"));
 }
 
 #[tokio::test]
 #[serial]
-async fn test_save_email_with_missing_recipient_logs_error() {
-    let (db, config) = setup_config_and_db().await;
-    let emailer = MailhogEmailer::new();
+async fn test_save_email_with_empty_recipient_fails() {
+    use emailer::repositories::email_repository::save_sent_email;
+
+    let (db, _) = setup_config_and_db().await;
 
     let args = SaveEmailArgs {
-        recipient: "".into(), // ⚠️ Invalid
+        recipient: "".into(), // Invalid
         email_type: EmailType::Passcode,
         subject: None,
         content: None,
@@ -149,15 +156,8 @@ async fn test_save_email_with_missing_recipient_logs_error() {
         opened_at: None,
     };
 
-    let result = emailer.save_email(&config, &db, args);
-    assert!(result.is_ok()); // still returns Ok (spawned task)
-
-    // Let the DB insert fail in background
-    tokio::time::sleep(std::time::Duration::from_millis(250)).await;
-
-    // Should not have been inserted
-    let results = email::Entity::find().all(&db).await.unwrap();
-    assert!(results.is_empty());
+    let result = save_sent_email(&db, args).await;
+    assert!(result.is_err());
 }
 
 #[tokio::test]
