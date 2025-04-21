@@ -4,7 +4,7 @@ use anyhow::Result;
 use sea_orm::DatabaseConnection;
 
 pub trait Emailer: Send + Sync {
-    fn send_passcode_email(&self, email: &str, passcode: &str) -> Result<()>;
+    fn send_passcode_email(&self, config: &AppConfig, email: &str, passcode: &str) -> Result<()>;
     fn save_email(
         &self,
         config: &AppConfig,

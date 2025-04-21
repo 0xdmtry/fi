@@ -1,7 +1,7 @@
 use emailer::config::AppConfig;
 use emailer::models::Provider;
-use std::env;
 use serial_test::serial;
+use std::env;
 
 fn clear_env() {
     for key in [
@@ -45,6 +45,9 @@ fn test_emailer_config_valid_env_values() {
         env::set_var("DATABASE_URL", "postgres://real");
         env::set_var("DATABASE_TEST_URL", "postgres://test");
         env::set_var("RUN_MIGRATIONS", "true");
+
+        env::set_var("MAILHOG_SERVER", "mailhog");
+        env::set_var("MAILHOG_PORT", "1025");
     }
 
     let config = AppConfig::from_env();
@@ -55,6 +58,8 @@ fn test_emailer_config_valid_env_values() {
     assert_eq!(config.db_conn_retry_delay_seconds, 5);
     assert_eq!(config.database_url, "postgres://real");
     assert_eq!(config.database_test_url, "postgres://test");
+    assert_eq!(config.mailhog_server, "mailhog");
+    assert_eq!(config.mailhog_port, 1025);
     assert!(config.run_migrations);
 }
 

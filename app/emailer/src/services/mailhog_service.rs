@@ -1,12 +1,10 @@
 use anyhow::{Result, anyhow};
 use askama::Template;
-use chrono::Utc;
 use lettre::{
     Message, SmtpTransport, Transport,
-    message::{MultiPart, SinglePart, header},
+    message::{MultiPart, SinglePart},
 };
 use sea_orm::DatabaseConnection;
-use std::sync::Arc;
 
 use crate::config::AppConfig;
 use crate::models::{EmailType, Provider};
@@ -33,7 +31,7 @@ struct PasscodePlainTemplate<'a> {
     passcode: &'a str,
 }
 impl Emailer for MailhogEmailer {
-    fn send_passcode_email(&self, email: &str, passcode: &str) -> Result<()> {
+    fn send_passcode_email(&self, config: &AppConfig, email: &str, passcode: &str) -> Result<()> {
         let html = PasscodeHtmlTemplate { passcode }
             .render()
             .map_err(|e| anyhow!("Failed to render HTML template: {e}"))?;
@@ -52,8 +50,8 @@ impl Emailer for MailhogEmailer {
                     .singlepart(SinglePart::html(html)),
             )?;
 
-        let mailer = SmtpTransport::builder_dangerous("mailhog")
-            .port(1025)
+        let mailer = SmtpTransport::builder_dangerous(&config.mailhog_server)
+            .port(config.mailhog_port)
             .build();
 
         mailer
@@ -90,7 +88,7 @@ impl Emailer for MailhogEmailer {
         email: &str,
         passcode: &str,
     ) -> Result<()> {
-        self.send_passcode_email(email, passcode)?;
+        self.send_passcode_email(config, email, passcode)?;
 
         let args = SaveEmailArgs {
             recipient: email.to_string(),

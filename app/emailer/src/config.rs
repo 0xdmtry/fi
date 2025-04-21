@@ -13,6 +13,9 @@ pub struct AppConfig {
     pub database_url: String,
     pub database_test_url: String,
 
+    pub mailhog_server: String,
+    pub mailhog_port: u16,
+
     pub run_migrations: bool,
 }
 
@@ -23,6 +26,8 @@ impl AppConfig {
         let default_max_retries: i32 = 10;
 
         let default_db_conn_max_attempts: u32 = 10;
+        let default_mailhog_port: u16 = 1025;
+
         let default_db_conn_retry_delay_seconds: u64 = 2;
 
         let email_provider = env::var("EMAIL_PROVIDER")
@@ -47,6 +52,10 @@ impl AppConfig {
             .ok()
             .and_then(|v| v.parse::<u64>().ok());
 
+        let mailhog_port_value = env::var("MAILHOG_PORT")
+            .ok()
+            .and_then(|v| v.parse::<u16>().ok());
+
         let db_conn_max_attempts: u32 = match (db_max_attempts) {
             (Some(attempts)) if attempts > 0 => attempts,
             _ => default_db_conn_max_attempts,
@@ -55,6 +64,11 @@ impl AppConfig {
         let db_conn_retry_delay_seconds = match (db_retry_delay_seconds) {
             (Some(seconds)) if seconds > 0 => seconds,
             _ => default_db_conn_retry_delay_seconds,
+        };
+
+        let mailhog_port = match (mailhog_port_value) {
+            (Some(port)) if port > 0 => port,
+            _ => default_mailhog_port,
         };
 
         Self {
@@ -67,6 +81,9 @@ impl AppConfig {
 
             database_url: env::var("DATABASE_URL").unwrap_or_default(),
             database_test_url: env::var("DATABASE_TEST_URL").unwrap_or_default(),
+
+            mailhog_server: env::var("MAILHOG_SERVER").unwrap_or_default(),
+            mailhog_port,
 
             run_migrations: env::var("RUN_MIGRATIONS")
                 .map(|v| v == "true" || v == "1")
