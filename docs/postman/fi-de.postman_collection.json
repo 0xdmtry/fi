@@ -43,7 +43,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"email\": \"example@example.com\"\n}",
+													"raw": "{\n    \"email\": \"example003@example.com\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -98,7 +98,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"email\": \"example@example.com\",\n    \"passcode\": \"1234\"\n}",
+													"raw": "{\n    \"email\": \"example@example.com\",\n    \"passcode\": \"2234\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -166,6 +166,33 @@
 								{
 									"name": "v1",
 									"item": [
+										{
+											"name": "passcode",
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"email\": \"example@example.com\",\n    \"passcode\": \"2234\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{test_emailer_host}}/v1/passcode",
+													"host": [
+														"{{test_emailer_host}}"
+													],
+													"path": [
+														"v1",
+														"passcode"
+													]
+												}
+											},
+											"response": []
+										},
 										{
 											"name": "ping",
 											"request": {
