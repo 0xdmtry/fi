@@ -1,7 +1,9 @@
-pub mod user;
-pub mod passcode;
 pub mod join;
+pub mod passcode;
+pub mod user;
+pub mod verify;
 
-pub use user::Entity as User;
-pub use passcode::Entity as Passcode;
 pub use join::JoinRequest;
+pub use passcode::Entity as Passcode;
+pub use user::Entity as User;
+pub use verify::VerifyPasscodeRequest;
