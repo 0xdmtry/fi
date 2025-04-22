@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError};
 
 fn is_email_safe_format(email: &str) -> Result<(), ValidationError> {
@@ -18,7 +18,7 @@ fn has_digits_only(passcode: &str) -> Result<(), ValidationError> {
     }
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct SendPasscodeRequest {
     #[validate(email)]
     #[validate(length(min = 5, max = 254))]

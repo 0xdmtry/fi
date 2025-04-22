@@ -25,7 +25,7 @@ async fn setup_db() -> (DbConn, AppConfig) {
 async fn test_process_join_creates_user_and_passcode_and_sends_email() {
     let (db, mut config) = setup_db().await;
     let email = new_email();
-    config.emailer_url = "http://localhost:8101".to_string();
+    config.emailer_url = config.emailer_test_url.clone();
 
     user_service::process_join_request(&db, &config, &email)
         .await

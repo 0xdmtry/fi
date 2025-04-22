@@ -2,6 +2,16 @@ use std::env;
 
 #[derive(Debug, Clone)]
 pub struct AppConfig {
+    pub database_url: String,
+    pub database_test_url: String,
+
+    pub run_migrations: bool,
+
+    pub emailer_url: String,
+    pub emailer_test_url: String,
+
+    pub authorizer_test_url: String,
+
     pub passcode_ttl_seconds: i64,
 
     pub passcode_len: u32,
@@ -11,14 +21,6 @@ pub struct AppConfig {
 
     pub passcode_max_attempts: u32,
     pub passcode_max_resends: u32,
-
-    pub database_url: String,
-    pub database_test_url: String,
-
-    pub emailer_url: String,
-    pub emailer_test_url: String,
-
-    pub run_migrations: bool,
 
     pub db_conn_max_attempts: u32,
     pub db_conn_retry_delay_seconds: u64,
@@ -120,6 +122,15 @@ impl AppConfig {
             _ => default_db_conn_retry_delay_seconds,
         };
 
+        let database_url = env::var("DATABASE_URL").unwrap_or_default();
+        let database_test_url = env::var("DATABASE_TEST_URL").unwrap_or_default();
+        let run_migrations = env::var("RUN_MIGRATIONS")
+            .map(|v| v == "true" || v == "1")
+            .unwrap_or(false);
+        let emailer_url = env::var("EMAILER_URL").unwrap_or_default();
+        let emailer_test_url = env::var("EMAILER_TEST_URL").unwrap_or_default();
+        let authorizer_test_url = env::var("AUTHORIZER_TEST_URL").unwrap_or_default();
+
         Self {
             passcode_ttl_seconds,
             passcode_len,
@@ -132,15 +143,12 @@ impl AppConfig {
             db_conn_max_attempts,
             db_conn_retry_delay_seconds,
 
-            database_url: env::var("DATABASE_URL").unwrap_or_default(),
-            database_test_url: env::var("DATABASE_TEST_URL").unwrap_or_default(),
-
-            emailer_url: env::var("EMAILER_URL").unwrap_or_default(),
-            emailer_test_url: env::var("EMAILER_TEST_URL").unwrap_or_default(),
-
-            run_migrations: env::var("RUN_MIGRATIONS")
-                .map(|v| v == "true" || v == "1")
-                .unwrap_or(false),
+            database_url,
+            database_test_url,
+            run_migrations,
+            emailer_url,
+            emailer_test_url,
+            authorizer_test_url,
         }
     }
 

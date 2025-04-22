@@ -28,8 +28,8 @@ async fn test_send_passcode_email_succeeds() {
     let emailer = MailhogEmailer::new();
     let (_, mut config) = setup_config_and_db().await;
 
-    config.mailhog_server = "localhost".into();
-    config.mailhog_port = 1125;
+    config.mailhog_server = config.mailhog_test_server.clone();
+    config.mailhog_port = config.mailhog_test_port;
 
     let result = emailer.send_passcode_email(&config, "user@example.com", "1234");
 
@@ -85,8 +85,8 @@ async fn test_send_and_save_passcode_email_succeeds() {
     let to = test_email();
     let passcode = "5678";
 
-    config.mailhog_server = "localhost".into();
-    config.mailhog_port = 1125;
+    config.mailhog_server = config.mailhog_test_server.clone();
+    config.mailhog_port = config.mailhog_test_port;
 
     let result = emailer.send_and_save_passcode_email(&config, &db, &to, passcode);
 

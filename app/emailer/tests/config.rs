@@ -12,6 +12,11 @@ fn clear_env() {
         "DATABASE_URL",
         "DATABASE_TEST_URL",
         "RUN_MIGRATIONS",
+        "MAILHOG_SERVER",
+        "MAILHOG_PORT",
+        "MAILHOG_TEST_SERVER",
+        "MAILHOG_TEST_PORT",
+        "EMAILER_TEST_URL",
     ] {
         unsafe { env::remove_var(key) };
     }
@@ -27,9 +32,14 @@ fn test_emailer_config_defaults() {
     assert_eq!(config.max_reties, 10);
     assert_eq!(config.db_conn_max_attempts, 10);
     assert_eq!(config.db_conn_retry_delay_seconds, 2);
+    assert!(!config.run_migrations);
     assert_eq!(config.database_url, "");
     assert_eq!(config.database_test_url, "");
-    assert!(!config.run_migrations);
+    assert_eq!(config.mailhog_server, "");
+    assert_eq!(config.mailhog_port, 1025);
+    assert_eq!(config.mailhog_test_server, "");
+    assert_eq!(config.mailhog_test_port, 1125);
+    assert_eq!(config.emailer_test_url, "");
 }
 
 #[test]
@@ -45,9 +55,11 @@ fn test_emailer_config_valid_env_values() {
         env::set_var("DATABASE_URL", "postgres://real");
         env::set_var("DATABASE_TEST_URL", "postgres://test");
         env::set_var("RUN_MIGRATIONS", "true");
-
         env::set_var("MAILHOG_SERVER", "mailhog");
-        env::set_var("MAILHOG_PORT", "1025");
+        env::set_var("MAILHOG_PORT", "2025");
+        env::set_var("MAILHOG_TEST_SERVER", "localhost");
+        env::set_var("MAILHOG_TEST_PORT", "2125");
+        env::set_var("EMAILER_TEST_URL", "http://localhost:8101");
     }
 
     let config = AppConfig::from_env();
@@ -58,9 +70,12 @@ fn test_emailer_config_valid_env_values() {
     assert_eq!(config.db_conn_retry_delay_seconds, 5);
     assert_eq!(config.database_url, "postgres://real");
     assert_eq!(config.database_test_url, "postgres://test");
+    assert_eq!(config.run_migrations, true);
     assert_eq!(config.mailhog_server, "mailhog");
-    assert_eq!(config.mailhog_port, 1025);
-    assert!(config.run_migrations);
+    assert_eq!(config.mailhog_port, 2025);
+    assert_eq!(config.mailhog_test_server, "localhost");
+    assert_eq!(config.mailhog_test_port, 2125);
+    assert_eq!(config.emailer_test_url, "http://localhost:8101");
 }
 
 #[test]
@@ -69,7 +84,7 @@ fn test_emailer_invalid_provider_falls_back() {
     clear_env();
 
     unsafe {
-        env::set_var("EMAIL_PROVIDER", "invalid-provider");
+        env::set_var("EMAIL_PROVIDER", "unknown");
     }
 
     let config = AppConfig::from_env();
@@ -85,6 +100,8 @@ fn test_emailer_invalid_retry_counts_fallback() {
         env::set_var("MAX_RETRIES", "0");
         env::set_var("DB_CONN_MAX_ATTEMPTS", "-1");
         env::set_var("DB_CONN_RETRY_DELAY_SECONDS", "0");
+        env::set_var("MAILHOG_PORT", "0");
+        env::set_var("MAILHOG_TEST_PORT", "0");
     }
 
     let config = AppConfig::from_env();
@@ -92,6 +109,8 @@ fn test_emailer_invalid_retry_counts_fallback() {
     assert_eq!(config.max_reties, 10);
     assert_eq!(config.db_conn_max_attempts, 10);
     assert_eq!(config.db_conn_retry_delay_seconds, 2);
+    assert_eq!(config.mailhog_port, 1025);
+    assert_eq!(config.mailhog_test_port, 1125);
 }
 
 #[test]
@@ -109,7 +128,7 @@ fn test_emailer_run_migrations_variants() {
         env::set_var("RUN_MIGRATIONS", "false");
         assert!(!AppConfig::from_env().run_migrations);
 
-        env::set_var("RUN_MIGRATIONS", "maybe");
+        env::set_var("RUN_MIGRATIONS", "banana");
         assert!(!AppConfig::from_env().run_migrations);
     }
 }
