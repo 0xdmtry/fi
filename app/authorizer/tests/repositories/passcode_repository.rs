@@ -2,7 +2,9 @@ use authorizer::config::AppConfig;
 use authorizer::models::{passcode, user};
 use authorizer::repositories::{passcode_repository, user_repository};
 use chrono::{Duration, Utc};
-use sea_orm::{ActiveModelTrait, Database, DbConn, EntityTrait, IntoActiveModel, Set};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, Database, DbConn, EntityTrait, IntoActiveModel, QueryFilter, Set,
+};
 use serial_test::serial;
 use uuid::Uuid;
 
@@ -135,4 +137,100 @@ async fn test_find_active_returns_latest_if_multiple_valid() {
         .await
         .unwrap();
     assert_eq!(found.unwrap().id, latest.id);
+}
+
+#[tokio::test]
+#[serial]
+async fn test_find_matching_active_passcode_success() {
+    let (db, config) = setup_db().await;
+
+    let email = format!("verify-{}@example.com", Uuid::new_v4());
+    let user = user_repository::insert_new_user(&db, &email).await.unwrap();
+
+    let pass = passcode_repository::generate_and_insert(&db, &config, &user)
+        .await
+        .unwrap();
+
+    let found = passcode_repository::find_matching_active_passcode(&db, user.id, &pass.code)
+        .await
+        .unwrap();
+
+    assert!(found.is_some());
+    assert_eq!(found.unwrap().id, pass.id);
+}
+
+#[tokio::test]
+#[serial]
+async fn test_find_matching_active_passcode_returns_none_if_used() {
+    let (db, config) = setup_db().await;
+
+    let email = format!("verrify-{}@example.com", Uuid::new_v4());
+    let user = user_repository::insert_new_user(&db, &email).await.unwrap();
+
+    let mut pass = passcode_repository::generate_and_insert(&db, &config, &user)
+        .await
+        .unwrap()
+        .into_active_model();
+
+    let code = pass.code.as_ref().clone();
+
+    pass.used = Set(true);
+    pass.update(&db).await.unwrap();
+
+    let found = passcode_repository::find_matching_active_passcode(&db, user.id, &code)
+        .await
+        .unwrap();
+
+    assert!(found.is_none());
+}
+
+#[tokio::test]
+#[serial]
+async fn test_increment_attempt_count_increments_properly() {
+    let (db, config) = setup_db().await;
+
+    let email = format!("verify-{}@example.com", Uuid::new_v4());
+    let user = user_repository::insert_new_user(&db, &email).await.unwrap();
+
+    let pass = passcode_repository::generate_and_insert(&db, &config, &user)
+        .await
+        .unwrap();
+
+    passcode_repository::increment_attempt_count(&db, pass.id)
+        .await
+        .unwrap();
+
+    let updated = passcode::Entity::find_by_id(pass.id)
+        .one(&db)
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(updated.attempt_count, 1);
+}
+
+#[tokio::test]
+#[serial]
+async fn test_mark_all_active_codes_used_sets_used_flag() {
+    let (db, config) = setup_db().await;
+
+    let email = format!("verify-{}@example.com", Uuid::new_v4());
+    let user = user_repository::insert_new_user(&db, &email).await.unwrap();
+
+    for _ in 0..3 {
+        passcode_repository::generate_and_insert(&db, &config, &user)
+            .await
+            .unwrap();
+    }
+
+    passcode_repository::mark_all_active_codes_used(&db, user.id)
+        .await
+        .unwrap();
+
+    let all = passcode::Entity::find()
+        .filter(passcode::Column::UserId.eq(user.id))
+        .all(&db)
+        .await
+        .unwrap();
+
+    assert!(all.iter().all(|p| p.used));
 }
