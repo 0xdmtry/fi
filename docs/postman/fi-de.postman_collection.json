@@ -37,13 +37,40 @@
 											"response": []
 										},
 										{
+											"name": "verify",
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"email\": \"001-2025-04-24@example.com\",\n    \"passcode\": \"1565\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{dev_authorizer_host}}/v1/verify",
+													"host": [
+														"{{dev_authorizer_host}}"
+													],
+													"path": [
+														"v1",
+														"verify"
+													]
+												}
+											},
+											"response": []
+										},
+										{
 											"name": "join",
 											"request": {
 												"method": "POST",
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"email\": \"example003@example.com\"\n}",
+													"raw": "{\n    \"email\": \"001-2025-04-24@example.com\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
