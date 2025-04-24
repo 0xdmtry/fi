@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError};
 
 fn is_email_safe_format(email: &str) -> Result<(), ValidationError> {
@@ -10,7 +10,7 @@ fn is_email_safe_format(email: &str) -> Result<(), ValidationError> {
     Ok(())
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct JoinRequest {
     #[validate(email)]
     #[validate(length(min = 5, max = 254))]
