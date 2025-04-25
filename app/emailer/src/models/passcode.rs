@@ -29,3 +29,19 @@ pub struct SendPasscodeRequest {
     #[validate(custom(function = "has_digits_only"))]
     pub passcode: String,
 }
+
+#[derive(Debug, Deserialize, Serialize, Validate)]
+pub struct SendSuccessPasscodeRequest {
+    #[validate(email)]
+    #[validate(length(min = 5, max = 254))]
+    #[validate(custom(function = "is_email_safe_format"))]
+    pub email: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Validate)]
+pub struct SendFailedPasscodeRequest {
+    #[validate(email)]
+    #[validate(length(min = 5, max = 254))]
+    #[validate(custom(function = "is_email_safe_format"))]
+    pub email: String,
+}

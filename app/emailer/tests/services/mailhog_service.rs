@@ -178,3 +178,57 @@ async fn test_send_email_to_unreachable_host_fails() {
 
     assert!(result.is_err());
 }
+
+#[tokio::test]
+#[serial]
+async fn test_send_and_save_success_passcode_email() {
+    let (db, mut config) = setup_config_and_db().await;
+    let emailer = MailhogEmailer::new();
+
+    config.mailhog_server = config.mailhog_test_server.clone();
+    config.mailhog_port = config.mailhog_test_port;
+
+    let to = test_email();
+
+    let result = emailer.send_and_save_success_passcode_email(&config, &db, &to);
+
+    assert!(result.is_ok());
+
+    tokio::time::sleep(std::time::Duration::from_millis(250)).await;
+
+    let saved = email::Entity::find()
+        .filter(email::Column::Recipient.eq(to))
+        .filter(email::Column::EmailType.eq(EmailType::SuccessPasscode))
+        .one(&db)
+        .await
+        .unwrap();
+
+    assert!(saved.is_some());
+}
+
+#[tokio::test]
+#[serial]
+async fn test_send_and_save_failed_passcode_email() {
+    let (db, mut config) = setup_config_and_db().await;
+    let emailer = MailhogEmailer::new();
+
+    config.mailhog_server = config.mailhog_test_server.clone();
+    config.mailhog_port = config.mailhog_test_port;
+
+    let to = test_email();
+
+    let result = emailer.send_and_save_failed_passcode_email(&config, &db, &to);
+
+    assert!(result.is_ok());
+
+    tokio::time::sleep(std::time::Duration::from_millis(250)).await;
+
+    let saved = email::Entity::find()
+        .filter(email::Column::Recipient.eq(to))
+        .filter(email::Column::EmailType.eq(EmailType::FailedPasscode))
+        .one(&db)
+        .await
+        .unwrap();
+
+    assert!(saved.is_some());
+}

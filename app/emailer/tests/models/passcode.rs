@@ -1,4 +1,7 @@
+use emailer::models::passcode::SendFailedPasscodeRequest;
 use emailer::models::passcode::SendPasscodeRequest;
+use emailer::models::passcode::SendSuccessPasscodeRequest;
+
 use validator::Validate;
 
 fn valid_email() -> String {
@@ -202,4 +205,58 @@ fn test_passcode_all_digits_passes() {
     };
 
     assert!(model.validate().is_ok());
+}
+
+// SendSuccessPasscodeRequest
+
+#[test]
+fn test_valid_success_email_passes() {
+    let model = SendSuccessPasscodeRequest {
+        email: valid_email(),
+    };
+
+    assert!(model.validate().is_ok());
+}
+
+#[test]
+fn test_invalid_success_email_fails() {
+    let model = SendSuccessPasscodeRequest {
+        email: "not-an-email".into(),
+    };
+
+    assert!(model.validate().is_err());
+}
+
+#[test]
+fn test_empty_success_email_fails() {
+    let model = SendSuccessPasscodeRequest { email: "".into() };
+
+    assert!(model.validate().is_err());
+}
+
+// Failed Passcode
+
+#[test]
+fn test_valid_failed_email_passes() {
+    let model = SendFailedPasscodeRequest {
+        email: valid_email(),
+    };
+
+    assert!(model.validate().is_ok());
+}
+
+#[test]
+fn test_invalid_failed_email_fails() {
+    let model = SendFailedPasscodeRequest {
+        email: "not-an-email".into(),
+    };
+
+    assert!(model.validate().is_err());
+}
+
+#[test]
+fn test_empty_failed_email_fails() {
+    let model = SendFailedPasscodeRequest { email: "".into() };
+
+    assert!(model.validate().is_err());
 }

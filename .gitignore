@@ -388,9 +388,6 @@ config/
 *.tmp
 *.old
 
-# Logs
-*.txt
-
 # Elimanate huge files
 test-ledger
 /test-ledger
