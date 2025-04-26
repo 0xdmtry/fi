@@ -1,7 +1,3 @@
-use crate::models::join::JoinRequest;
-use crate::services::user_service::process_join_request;
-use crate::state::AppState;
-use crate::utils::normalize::normalize_email;
 use axum::{
     debug_handler,
     extract::{Json, State},
@@ -9,10 +5,15 @@ use axum::{
 };
 use validator::Validate;
 
+use crate::models::resend::ResendRequest;
+use crate::services::passcode_service::resend_passcode;
+use crate::state::AppState;
+use crate::utils::normalize::normalize_email;
+
 #[debug_handler]
-pub async fn join_handler(
+pub async fn resend_handler(
     State(app_state): State<AppState>,
-    Json(payload): Json<JoinRequest>,
+    Json(payload): Json<ResendRequest>,
 ) -> Result<StatusCode, (StatusCode, String)> {
     if let Err(e) = payload.validate() {
         return Err((StatusCode::BAD_REQUEST, format!("Validation failed: {e}")));
@@ -20,7 +21,7 @@ pub async fn join_handler(
 
     let normalized_email = normalize_email(&payload.email);
 
-    process_join_request(&app_state.db_conn, &app_state.config, &normalized_email)
+    resend_passcode(&app_state.db_conn, &app_state.config, &normalized_email)
         .await
         .map_err(|e| {
             (
