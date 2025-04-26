@@ -73,6 +73,42 @@ services:
     networks:
       - fi-network
 
+  dapp-solana-walletor:
+    container_name: dapp-solana-walletor
+    build:
+      context: ../../dapp/solana/walletor
+      dockerfile: Walletor.dev.dockerfile
+    restart: always
+    depends_on:
+      db-dapp-solana-walletor:
+        condition: service_started
+    ports:
+      - "8002:8002"
+    volumes:
+      - ../../dapp/solana/walletor/src:/app/src
+      - ../../dapp/solana/walletor/migration:/app/migration
+      - ../../dapp/solana/walletor/tests:/app/tests
+      - ../../dapp/solana/walletor/Cargo.toml:/app/Cargo.toml
+      - ../../dapp/solana/walletor/Cargo.lock:/app/Cargo.lock
+      - /app/target
+    networks:
+      - fi-network
+
+  db-dapp-solana-walletor:
+    container_name: db-dapp-solana-walletor
+    image: postgres:17.4
+    restart: always
+    environment:
+      POSTGRES_DB: walletor
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - .dbdata/postgres/dev/solana_walletor/:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - fi-network
+
   mailhog:
     container_name: mailhog
     image: "mailhog/mailhog:latest"
@@ -90,7 +126,6 @@ networks:
 
 
 #####################################################
-
 #services:
 #  #  fe:
 #  #    container_name: fe
@@ -108,55 +143,4 @@ networks:
 #  #    command: npm run dev
 #  #    networks:
 #  #      - fi-network
-#
-#  fi-api:
-#    container_name: fi-api
-#    build:
-#      context: ..
-#      dockerfile: ./../app/api/Api.dev.dockerfile
-#    restart: always
-#    ports:
-#      - "8000:8000"
-#    volumes:
-#      - ./../app/api:/app/api
-#      - /app/api/target  # Avoid using cached target from host
-#    #    depends_on:
-#    #      fi-api-db:
-#    #        condition: service_healthy
-#    #      mailhog:
-#    #        condition: service_started
-#    networks:
-#      - fi-network
-#
-##  fi-api-db:
-##    container_name: fi-api-db
-##    image: postgres:17.4
-##    restart: always
-##    environment:
-##      POSTGRES_DB: fiapi
-##      POSTGRES_USER: root
-##      POSTGRES_PASSWORD: root
-##    volumes:
-##      - .dbdata/postgres/:/var/lib/postgresql/data
-##    healthcheck:
-##      test: ["CMD-SHELL", "pg_isready -U root"]
-##      interval: 5s
-##      timeout: 5s
-##      retries: 3
-##    ports:
-##      - "5432:5432"
-##    networks:
-##      - fi-network
-##
-##  mailhog:
-##    container_name: mailhog:1.0.1
-##    image: "mailhog/mailhog:latest"
-##    ports:
-##      - "1025:1025"
-##      - "8025:8025"
-##    networks:
-##      - fi-network
-#
-#networks:
-#  fi-network:
-#    driver: bridge
+
