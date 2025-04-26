@@ -34,6 +34,7 @@ pub async fn verify_passcode(
         passcode_repository::find_matching_active_passcode(db, user.id, input_code).await?
     {
         passcode_repository::mark_all_active_codes_used(db, user.id).await?;
+        email_client::send_success_passcode_email(config, &user.email).await?;
         return Ok(());
     }
 
@@ -41,6 +42,7 @@ pub async fn verify_passcode(
         passcode_repository::increment_attempt_count(db, active_code.id).await?;
 
         if active_code.attempt_count + 1 >= config.passcode_max_attempts as i32 {
+            email_client::send_failed_passcode_email(config, &user.email).await?;
             return Err(anyhow!("Too many incorrect attempts"));
         }
 
