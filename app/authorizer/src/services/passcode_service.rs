@@ -1,8 +1,10 @@
 use crate::config::AppConfig;
 use crate::models::{passcode, user};
 use crate::repositories::{passcode_repository, user_repository};
+use crate::services::email_client;
 use crate::utils::normalize::normalize_email;
 use anyhow::{Result, anyhow};
+use chrono::Utc;
 use sea_orm::{DbConn, EntityTrait};
 
 pub async fn get_or_create_passcode(
@@ -46,4 +48,29 @@ pub async fn verify_passcode(
     }
 
     Err(anyhow!("No active passcode found"))
+}
+
+pub async fn resend_passcode(db: &DbConn, config: &AppConfig, email: &str) -> anyhow::Result<()> {
+    let normalized_email = normalize_email(email);
+
+    let user = user_repository::find_by_email(db, &normalized_email)
+        .await?
+        .ok_or_else(|| anyhow!("User not found"))?;
+
+    let now = Utc::now();
+
+    if let Some(mut active_passcode) = passcode_repository::find_active_by_user_id(db, user.id)
+        .await?
+        .filter(|p| p.resend_count < config.passcode_max_resends as i32)
+        .filter(|p| p.attempt_count < config.passcode_max_attempts as i32)
+        .filter(|p| p.expired_at > now)
+    {
+        passcode_repository::increment_resend_count(db, active_passcode.id).await?;
+        email_client::send_passcode_email(config, &user.email, &active_passcode.code).await?;
+        Ok(())
+    } else {
+        let new_passcode = passcode_repository::generate_and_insert(db, config, &user).await?;
+        email_client::send_passcode_email(config, &user.email, &new_passcode.code).await?;
+        Ok(())
+    }
 }

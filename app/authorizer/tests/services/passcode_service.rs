@@ -172,3 +172,71 @@ async fn test_verify_passcode_fails_after_max_attempts() {
         "Too many incorrect attempts"
     );
 }
+
+// Resend logic
+
+#[tokio::test]
+#[serial]
+async fn test_resend_passcode_reuses_existing_code() {
+    let (db, mut config) = setup_db().await;
+    config.emailer_url = config.emailer_test_url.clone();
+
+    let email = format!("reuse-{}@example.com", Uuid::new_v4());
+    let user = user_repository::insert_new_user(&db, &email).await.unwrap();
+    let pass = passcode_repository::generate_and_insert(&db, &config, &user)
+        .await
+        .unwrap();
+
+    passcode_service::resend_passcode(&db, &config, &email)
+        .await
+        .expect("resend failed");
+
+    let updated = passcode::Entity::find_by_id(pass.id)
+        .one(&db)
+        .await
+        .unwrap()
+        .unwrap();
+
+    assert_eq!(updated.resend_count, 1);
+}
+
+#[tokio::test]
+#[serial]
+async fn test_resend_passcode_generates_new_if_limits_exceeded() {
+    let (db, mut config) = setup_db().await;
+    config.emailer_url = config.emailer_test_url.clone();
+
+    let email = format!("new-{}@example.com", Uuid::new_v4());
+    let user = user_repository::insert_new_user(&db, &email).await.unwrap();
+    let mut pass = passcode_repository::generate_and_insert(&db, &config, &user)
+        .await
+        .unwrap()
+        .into_active_model();
+
+    pass.resend_count = Set(config.passcode_max_resends as i32);
+    pass.update(&db).await.unwrap();
+
+    passcode_service::resend_passcode(&db, &config, &email)
+        .await
+        .expect("resend failed");
+
+    let passes = passcode::Entity::find()
+        .filter(passcode::Column::UserId.eq(user.id))
+        .all(&db)
+        .await
+        .unwrap();
+
+    assert_eq!(passes.len(), 2);
+}
+
+#[tokio::test]
+#[serial]
+async fn test_resend_passcode_user_not_found() {
+    let (db, config) = setup_db().await;
+
+    let fake_email = format!("missing-{}@example.com", Uuid::new_v4());
+
+    let result = passcode_service::resend_passcode(&db, &config, &fake_email).await;
+
+    assert!(result.is_err());
+}

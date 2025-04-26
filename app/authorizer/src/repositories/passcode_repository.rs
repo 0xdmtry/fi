@@ -45,6 +45,22 @@ pub async fn increment_attempt_count(db: &DbConn, code_id: Uuid) -> anyhow::Resu
     Ok(())
 }
 
+pub async fn increment_resend_count(db: &DbConn, code_id: Uuid) -> anyhow::Result<()> {
+    let model = passcode::Entity::find_by_id(code_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| anyhow::anyhow!("Passcode not found"))?;
+    let new_resend_count = model.resend_count + 1;
+
+    let mut active = model.into_active_model();
+    active.resend_count = Set(new_resend_count);
+    active.updated_at = Set(Utc::now());
+
+    active.update(db).await?;
+
+    Ok(())
+}
+
 pub async fn mark_all_active_codes_used(db: &DbConn, user_id: Uuid) -> anyhow::Result<()> {
     let now = Utc::now();
 

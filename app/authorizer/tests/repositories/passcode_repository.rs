@@ -234,3 +234,28 @@ async fn test_mark_all_active_codes_used_sets_used_flag() {
 
     assert!(all.iter().all(|p| p.used));
 }
+
+#[tokio::test]
+#[serial]
+async fn test_increment_resend_count_increments_properly() {
+    let (db, config) = setup_db().await;
+
+    let email = format!("resend-{}@example.com", Uuid::new_v4());
+    let user = user_repository::insert_new_user(&db, &email).await.unwrap();
+
+    let pass = passcode_repository::generate_and_insert(&db, &config, &user)
+        .await
+        .unwrap();
+
+    passcode_repository::increment_resend_count(&db, pass.id)
+        .await
+        .unwrap();
+
+    let updated = passcode::Entity::find_by_id(pass.id)
+        .one(&db)
+        .await
+        .unwrap()
+        .unwrap();
+
+    assert_eq!(updated.resend_count, 1);
+}
