@@ -2,12 +2,16 @@ use std::env;
 
 #[derive(Debug, Clone)]
 pub struct AppConfig {
+
     pub database_url: String,
     pub database_test_url: String,
     pub run_migrations: bool,
 
     pub db_conn_max_attempts: u32,
     pub db_conn_retry_delay_seconds: u64,
+
+    pub walletor_test_url: String,
+
 }
 
 impl AppConfig {
@@ -42,6 +46,9 @@ impl AppConfig {
             _ => default_db_conn_retry_delay_seconds,
         };
 
+        let walletor_test_url = env::var("WALLETOR_TEST_URL").unwrap_or_default();
+
+
         Self {
             database_url,
             database_test_url,
@@ -49,6 +56,8 @@ impl AppConfig {
 
             db_conn_max_attempts,
             db_conn_retry_delay_seconds,
+
+            walletor_test_url,
         }
     }
 

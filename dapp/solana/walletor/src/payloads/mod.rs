@@ -1,4 +1,4 @@
-pub mod signup;
+pub mod signup_payload;
 
-pub use signup::SignupRequest;
-pub use signup::SignupResponse;
+pub use signup_payload::SignupRequest;
+pub use signup_payload::SignupResponse;

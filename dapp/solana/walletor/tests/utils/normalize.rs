@@ -1,4 +1,4 @@
-use authorizer::utils::normalize::normalize_string;
+use walletor::utils::normalize::normalize_string;
 
 #[test]
 fn test_email_cases_normalization() {

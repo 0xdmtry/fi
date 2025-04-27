@@ -1,4 +1,4 @@
-use authorizer::validators::is_email_safe_format;
+use walletor::validators::is_email_safe_format;
 
 #[test]
 fn test_valid_email_format() {
