@@ -13,6 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@orca-so/common-sdk": "^0.6.11",
+    "@orca-so/sdk": "^1.2.26",
+    "@solana/web3.js": "^1.98.2",
     "express": "^5.1.0"
   },
   "devDependencies": {
