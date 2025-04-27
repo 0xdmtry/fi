@@ -32,14 +32,15 @@ pub fn encrypt_aes_gcm(key: &[u8], plaintext: &[u8]) -> Result<Vec<u8>> {
         return Err(anyhow!("Encryption key must be 32 bytes for AES-256"));
     }
 
-    let cipher = Aes256Gcm::new_from_slice(key)
-        .map_err(|_| anyhow!("Failed to create AES cipher"))?;
+    let cipher =
+        Aes256Gcm::new_from_slice(key).map_err(|_| anyhow!("Failed to create AES cipher"))?;
 
     let mut nonce_bytes = [0u8; 12];
     SecureOsRng.fill_bytes(&mut nonce_bytes);
     let nonce = Nonce::from_slice(&nonce_bytes);
 
-    let ciphertext = cipher.encrypt(nonce, plaintext)
+    let ciphertext = cipher
+        .encrypt(nonce, plaintext)
         .map_err(|_| anyhow!("Encryption failed"))?;
 
     let mut output = nonce_bytes.to_vec();
@@ -60,13 +61,13 @@ pub fn decrypt_aes_gcm(key: &[u8], ciphertext: &[u8]) -> Result<Vec<u8>> {
 
     let (nonce_bytes, ciphertext) = ciphertext.split_at(12);
 
-    let cipher = Aes256Gcm::new_from_slice(key)
-        .map_err(|_| anyhow!("Failed to create AES cipher"))?;
+    let cipher =
+        Aes256Gcm::new_from_slice(key).map_err(|_| anyhow!("Failed to create AES cipher"))?;
 
-    cipher.decrypt(Nonce::from_slice(nonce_bytes), ciphertext)
+    cipher
+        .decrypt(Nonce::from_slice(nonce_bytes), ciphertext)
         .map_err(|_| anyhow!("Decryption failed"))
 }
-
 
 /// Derive a strong 32-byte encryption key from passcode + salt using scrypt
 pub fn derive_key_from_passcode(passcode: &str, salt: &[u8]) -> Result<[u8; 32]> {

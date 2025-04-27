@@ -43,7 +43,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"email\": \"001-2025-04-24@example.com\",\n    \"passcode\": \"1565\"\n}",
+													"raw": "{\n    \"email\": \"001-2025-04-26@example.com\",\n    \"passcode\": \"1565\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -70,7 +70,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"email\": \"001-2025-04-24@example.com\"\n}",
+													"raw": "{\n    \"email\": \"001-2025-04-26@example.com\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -85,6 +85,33 @@
 													"path": [
 														"v1",
 														"join"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "resend",
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"email\": \"001-2025-04-26@example.com\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{dev_authorizer_host}}/v1/resend",
+													"host": [
+														"{{dev_authorizer_host}}"
+													],
+													"path": [
+														"v1",
+														"resend"
 													]
 												}
 											},
@@ -125,7 +152,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"email\": \"example@example.com\",\n    \"passcode\": \"2234\"\n}",
+													"raw": "{\n    \"email\": \"001-2025-04-26@example.com\",\n    \"passcode\": \"2234\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -140,6 +167,93 @@
 													"path": [
 														"v1",
 														"passcode"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "passcode-success",
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"email\": \"001-2025-04-26@example.com\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{dev_emailer_host}}/v1/passcode",
+													"host": [
+														"{{dev_emailer_host}}"
+													],
+													"path": [
+														"v1",
+														"passcode"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "passcode-failed",
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"email\": \"001-2025-04-26@example.com\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{dev_emailer_host}}/v1/passcode",
+													"host": [
+														"{{dev_emailer_host}}"
+													],
+													"path": [
+														"v1",
+														"passcode"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "dapp",
+					"item": [
+						{
+							"name": "solana",
+							"item": [
+								{
+									"name": "walletor",
+									"item": [
+										{
+											"name": "ping",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{dev_solana_walletor_host}}/v1/ping",
+													"host": [
+														"{{dev_solana_walletor_host}}"
+													],
+													"path": [
+														"v1",
+														"ping"
 													]
 												}
 											},
@@ -193,33 +307,6 @@
 								{
 									"name": "v1",
 									"item": [
-										{
-											"name": "passcode",
-											"request": {
-												"method": "POST",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"email\": \"example@example.com\",\n    \"passcode\": \"2234\"\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{test_emailer_host}}/v1/passcode",
-													"host": [
-														"{{test_emailer_host}}"
-													],
-													"path": [
-														"v1",
-														"passcode"
-													]
-												}
-											},
-											"response": []
-										},
 										{
 											"name": "ping",
 											"request": {
@@ -281,6 +368,11 @@
 			"type": "string"
 		},
 		{
+			"key": "dev_solana_walletor_host",
+			"value": "http://localhost:8002",
+			"type": "string"
+		},
+		{
 			"key": "test_authorizer_host",
 			"value": "http://localhost:8100",
 			"type": "string"
@@ -288,6 +380,11 @@
 		{
 			"key": "test_emailer_host",
 			"value": "http://localhost:8101",
+			"type": "string"
+		},
+		{
+			"key": "test_solana_walletor_host",
+			"value": "http://localhost:8102",
 			"type": "string"
 		}
 	]
