@@ -1,3 +1,3 @@
-mod encryption_secret;
-mod wallet;
-mod wallet_share;
+pub mod encryption_secret;
+pub mod wallet;
+pub mod wallet_share;

@@ -27,7 +27,7 @@ validator = { version = "0.20.0", features = ["derive"] }               # Input 
 
 # --- Security ---
 argon2 = "0.5.3"                                                        # Password hashing (secure storage of user passwords)
-rand = "0.9.0"                                                          # Random values for tokens, salts, etc.
+rand = "0.8.5"                                                          # Random values for tokens, salts, etc.
 jsonwebtoken = "9.3.1"                                                  # JWT creation/validation for auth (access tokens, etc.)
 
 # --- HTTP Client (for external APIs, like email providers) ---
@@ -43,6 +43,10 @@ opentelemetry-jaeger = "0.22.0"                                         # Jaeger
 # --- Migration ---
 migration = { path = "./migration" }
 anyhow = "1.0.97"
+scrypt = "0.11.0"
+aes-gcm = "0.10.3"
+solana-sdk = "2.2.2"
+rand_core = "0.6.4"
 
 [dev-dependencies]
 # --- Dev-only: for advanced testing patterns ---
