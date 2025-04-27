@@ -83,7 +83,7 @@ services:
       test-db-dapp-solana-walletor:
         condition: service_started
     ports:
-      - "8102:8001"
+      - "8102:8002"
     volumes:
       - ../../dapp/solana/walletor/src:/app/src
       - ../../dapp/solana/walletor/migration:/app/migration
