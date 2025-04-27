@@ -1,5 +1,5 @@
 use emailer::config::AppConfig;
-use emailer::models::passcode::{
+use emailer::payloads::passcode_payload::{
     SendFailedPasscodeRequest, SendPasscodeRequest, SendSuccessPasscodeRequest,
 };
 use reqwest::Client;

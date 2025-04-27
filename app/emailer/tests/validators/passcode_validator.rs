@@ -1,4 +1,4 @@
-use authorizer::validators::has_digits_only;
+use emailer::validators::has_digits_only;
 
 #[test]
 fn test_valid_passcode_all_digits() {

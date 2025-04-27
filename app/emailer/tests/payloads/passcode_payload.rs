@@ -1,6 +1,6 @@
-use emailer::models::passcode::SendFailedPasscodeRequest;
-use emailer::models::passcode::SendPasscodeRequest;
-use emailer::models::passcode::SendSuccessPasscodeRequest;
+use emailer::payloads::passcode_payload::SendFailedPasscodeRequest;
+use emailer::payloads::passcode_payload::SendPasscodeRequest;
+use emailer::payloads::passcode_payload::SendSuccessPasscodeRequest;
 
 use validator::Validate;
 

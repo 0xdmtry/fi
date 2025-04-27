@@ -1,4 +1,4 @@
-use crate::models::passcode::{
+use crate::payloads::passcode_payload::{
     SendFailedPasscodeRequest, SendPasscodeRequest, SendSuccessPasscodeRequest,
 };
 use crate::state::AppState;

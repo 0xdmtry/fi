@@ -1,22 +1,7 @@
+use crate::validators::email_validator::is_email_safe_format;
+use crate::validators::passcode_validator::has_digits_only;
 use serde::{Deserialize, Serialize};
-use validator::{Validate, ValidationError};
-
-fn is_email_safe_format(email: &str) -> Result<(), ValidationError> {
-    if let Some((local, _)) = email.split_once('@') {
-        if local.starts_with('.') || local.ends_with('.') {
-            return Err(ValidationError::new("invalid_local_part"));
-        }
-    }
-    Ok(())
-}
-
-fn has_digits_only(passcode: &str) -> Result<(), ValidationError> {
-    if passcode.chars().all(|c| c.is_ascii_digit()) {
-        Ok(())
-    } else {
-        Err(ValidationError::new("passcode_must_be_digits_only"))
-    }
-}
+use validator::Validate;
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct SendPasscodeRequest {
