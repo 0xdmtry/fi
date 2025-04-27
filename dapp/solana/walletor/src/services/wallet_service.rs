@@ -1,9 +1,4 @@
-use chrono::Utc;
-use sea_orm::DbConn;
-use solana_sdk::pubkey::Pubkey;
-use solana_sdk::signature::Signer;
-use uuid::Uuid;
-
+use crate::config::AppConfig;
 use crate::crypto::{
     derive_key_from_passcode, encrypt_aes_gcm, generate_solana_keypair, split_secret_xor,
 };
@@ -11,6 +6,11 @@ use crate::models::{encryption_secret, wallet, wallet_share};
 use crate::repositories::{
     encryption_secret_repository, wallet_repository, wallet_share_repository,
 };
+use chrono::Utc;
+use sea_orm::DbConn;
+use solana_sdk::pubkey::Pubkey;
+use solana_sdk::signature::Signer;
+use uuid::Uuid;
 
 pub struct CreateWalletResponse {
     pub wallet_id: Uuid,
@@ -20,6 +20,7 @@ pub struct CreateWalletResponse {
 
 pub async fn create_wallet_service(
     db: &DbConn,
+    config: &AppConfig,
     user_id: Uuid,
     passcode: &str,
 ) -> anyhow::Result<CreateWalletResponse> {
