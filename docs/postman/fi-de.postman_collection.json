@@ -242,22 +242,60 @@
 									"name": "walletor",
 									"item": [
 										{
-											"name": "ping",
-											"request": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{dev_solana_walletor_host}}/v1/ping",
-													"host": [
-														"{{dev_solana_walletor_host}}"
-													],
-													"path": [
-														"v1",
-														"ping"
+											"name": "v1",
+											"item": [
+												{
+													"name": "ping",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{dev_solana_walletor_host}}/v1/ping",
+															"host": [
+																"{{dev_solana_walletor_host}}"
+															],
+															"path": [
+																"v1",
+																"ping"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "aggregator",
+									"item": [
+										{
+											"name": "ts-agg",
+											"item": [
+												{
+													"name": "v1",
+													"item": [
+														{
+															"name": "ping",
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{dev_solana_ts_agg_host}}/v1/ping",
+																	"host": [
+																		"{{dev_solana_ts_agg_host}}"
+																	],
+																	"path": [
+																		"v1",
+																		"ping"
+																	]
+																}
+															},
+															"response": []
+														}
 													]
 												}
-											},
-											"response": []
+											]
 										}
 									]
 								}
@@ -330,6 +368,77 @@
 							]
 						}
 					]
+				},
+				{
+					"name": "dapp",
+					"item": [
+						{
+							"name": "solana",
+							"item": [
+								{
+									"name": "walletor",
+									"item": [
+										{
+											"name": "v1",
+											"item": [
+												{
+													"name": "ping",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{test_solana_walletor_host}}/v1/ping",
+															"host": [
+																"{{test_solana_walletor_host}}"
+															],
+															"path": [
+																"v1",
+																"ping"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "aggregator",
+									"item": [
+										{
+											"name": "ts-agg",
+											"item": [
+												{
+													"name": "v1",
+													"item": [
+														{
+															"name": "ping",
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{test_solana_ts_agg_host}}/v1/ping",
+																	"host": [
+																		"{{test_solana_ts_agg_host}}"
+																	],
+																	"path": [
+																		"v1",
+																		"ping"
+																	]
+																}
+															},
+															"response": []
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
 				}
 			]
 		}
@@ -373,6 +482,11 @@
 			"type": "string"
 		},
 		{
+			"key": "dev_solana_ts_agg_host",
+			"value": "http://localhost:8003",
+			"type": "string"
+		},
+		{
 			"key": "test_authorizer_host",
 			"value": "http://localhost:8100",
 			"type": "string"
@@ -385,6 +499,11 @@
 		{
 			"key": "test_solana_walletor_host",
 			"value": "http://localhost:8102",
+			"type": "string"
+		},
+		{
+			"key": "test_solana_ts_agg_host",
+			"value": "http://localhost:8103",
 			"type": "string"
 		}
 	]
