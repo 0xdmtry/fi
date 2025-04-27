@@ -2,7 +2,7 @@ use crate::config::AppConfig;
 use crate::models::{passcode, user};
 use crate::repositories::{passcode_repository, user_repository};
 use crate::services::email_client;
-use crate::utils::normalize::normalize_email;
+use crate::utils::normalize::normalize_string;
 use anyhow::{Result, anyhow};
 use chrono::Utc;
 use sea_orm::{DbConn, EntityTrait};
@@ -24,7 +24,7 @@ pub async fn verify_passcode(
     email: &str,
     input_code: &str,
 ) -> Result<()> {
-    let normalized = normalize_email(email);
+    let normalized = normalize_string(email);
 
     let user = user_repository::find_by_email(db, &normalized)
         .await?
@@ -53,7 +53,7 @@ pub async fn verify_passcode(
 }
 
 pub async fn resend_passcode(db: &DbConn, config: &AppConfig, email: &str) -> anyhow::Result<()> {
-    let normalized_email = normalize_email(email);
+    let normalized_email = normalize_string(email);
 
     let user = user_repository::find_by_email(db, &normalized_email)
         .await?

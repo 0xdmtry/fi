@@ -4,10 +4,10 @@ use axum::{
 };
 use validator::Validate;
 
-use crate::models::verify::VerifyPasscodeRequest;
+use crate::payloads::verify_passcode_payload::VerifyPasscodeRequest;
 use crate::services::passcode_service::verify_passcode;
 use crate::state::AppState;
-use crate::utils::normalize::normalize_email;
+use crate::utils::normalize::normalize_string;
 
 pub async fn verify_handler(
     State(app_state): State<AppState>,
@@ -17,7 +17,7 @@ pub async fn verify_handler(
         return Err((StatusCode::BAD_REQUEST, format!("Validation error: {}", e)));
     }
 
-    let normalized_email = normalize_email(&payload.email);
+    let normalized_email = normalize_string(&payload.email);
 
     verify_passcode(
         &app_state.db_conn,

@@ -1,6 +1,6 @@
 use authorizer::config::AppConfig;
-use authorizer::models::join::JoinRequest;
-use authorizer::models::verify::VerifyPasscodeRequest;
+use authorizer::payloads::join_user_payload::JoinRequest;
+use authorizer::payloads::verify_passcode_payload::VerifyPasscodeRequest;
 use reqwest::Client;
 use serial_test::serial;
 use uuid::Uuid;

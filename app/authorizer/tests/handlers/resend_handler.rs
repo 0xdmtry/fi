@@ -1,5 +1,5 @@
 use authorizer::config::AppConfig;
-use authorizer::models::resend::ResendRequest;
+use authorizer::payloads::resend_passcode_payload::ResendRequest;
 use reqwest::Client;
 use serial_test::serial;
 use uuid::Uuid;

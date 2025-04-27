@@ -109,6 +109,20 @@ services:
     networks:
       - fi-network
 
+  dapp-solana-ts-agg:
+    container_name: dapp-solana-ts-agg
+    build:
+      context: ../../dapp/solana/aggregator/ts-agg
+      dockerfile: TsAgg.dev.dockerfile
+    restart: always
+    ports:
+      - "8003:8003"
+    volumes:
+      - ../../dapp/solana/aggregator/ts-agg:/app
+      - /app/node_modules
+    networks:
+      - fi-network
+
   mailhog:
     container_name: mailhog
     image: "mailhog/mailhog:latest"

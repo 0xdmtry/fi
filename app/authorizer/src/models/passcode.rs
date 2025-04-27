@@ -2,7 +2,7 @@ use sea_orm::entity::prelude::*;
 use uuid::Uuid;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name="passcodes")]
+#[sea_orm(table_name = "passcodes")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: Uuid,

@@ -1,4 +1,4 @@
-use authorizer::models::verify::VerifyPasscodeRequest;
+use authorizer::payloads::verify_passcode_payload::VerifyPasscodeRequest;
 use validator::Validate;
 
 #[test]
