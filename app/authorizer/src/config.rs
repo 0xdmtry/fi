@@ -97,28 +97,28 @@ impl AppConfig {
             }
         };
 
-        let passcode_ttl_seconds = match (ttl_seconds) {
-            (Some(seconds)) if seconds > 0 => seconds,
+        let passcode_ttl_seconds = match ttl_seconds {
+            Some(seconds) if seconds > 0 => seconds,
             _ => default_ttl_seconds,
         };
 
-        let passcode_max_attempts = match (max_attempts) {
-            (Some(attempts)) if attempts > 0 => attempts,
+        let passcode_max_attempts = match max_attempts {
+            Some(attempts) if attempts > 0 => attempts,
             _ => default_max_attempts,
         };
 
-        let passcode_max_resends = match (max_resends) {
-            (Some(resends)) if resends > 0 => resends,
+        let passcode_max_resends = match max_resends {
+            Some(resends) if resends > 0 => resends,
             _ => default_max_resends,
         };
 
-        let db_conn_max_attempts: u32 = match (db_max_attempts) {
-            (Some(attempts)) if attempts > 0 => attempts,
+        let db_conn_max_attempts: u32 = match db_max_attempts {
+            Some(attempts) if attempts > 0 => attempts,
             _ => default_db_conn_max_attempts,
         };
 
-        let db_conn_retry_delay_seconds = match (db_retry_delay_seconds) {
-            (Some(seconds)) if seconds > 0 => seconds,
+        let db_conn_retry_delay_seconds = match db_retry_delay_seconds {
+            Some(seconds) if seconds > 0 => seconds,
             _ => default_db_conn_retry_delay_seconds,
         };
 

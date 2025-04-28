@@ -1,5 +1,4 @@
 use walletor::crypto::*;
-use uuid::Uuid;
 
 #[test]
 fn test_split_secret_and_recombine() {
@@ -12,7 +11,10 @@ fn test_split_secret_and_recombine() {
         .map(|(u, s)| u ^ s)
         .collect();
 
-    assert_eq!(secret, recombined, "Recombined secret does not match original");
+    assert_eq!(
+        secret, recombined,
+        "Recombined secret does not match original"
+    );
 }
 
 #[test]
@@ -23,7 +25,11 @@ fn test_encrypt_and_decrypt() {
     let ciphertext = encrypt_aes_gcm(&key, data).expect("encryption failed");
     let decrypted = decrypt_aes_gcm(&key, &ciphertext).expect("decryption failed");
 
-    assert_eq!(data.to_vec(), decrypted, "Decrypted text does not match original");
+    assert_eq!(
+        data.to_vec(),
+        decrypted,
+        "Decrypted text does not match original"
+    );
 }
 
 #[test]

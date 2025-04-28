@@ -1,4 +1,3 @@
-use axum::ServiceExt;
 use walletor::app;
 
 #[tokio::main]

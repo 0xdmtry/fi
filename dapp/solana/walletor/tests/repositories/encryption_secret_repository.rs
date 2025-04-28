@@ -1,4 +1,3 @@
-use chrono::Utc;
 use sea_orm::{Database, DbConn, EntityTrait};
 use uuid::Uuid;
 use walletor::config::AppConfig;

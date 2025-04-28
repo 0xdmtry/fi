@@ -67,7 +67,8 @@ async fn test_get_or_create_reuses_existing_passcode() {
 #[tokio::test]
 #[serial]
 async fn test_verify_passcode_succeeds() {
-    let (db, config) = setup_db().await;
+    let (db, mut config) = setup_db().await;
+    config.emailer_url = config.emailer_test_url.clone();
 
     let email = format!("verify-{}@example.com", Uuid::new_v4());
     let user = user_repository::insert_new_user(&db, &email).await.unwrap();
@@ -150,6 +151,7 @@ async fn test_verify_passcode_fails_if_expired() {
 #[serial]
 async fn test_verify_passcode_fails_after_max_attempts() {
     let (db, mut config) = setup_db().await;
+    config.emailer_url = config.emailer_test_url.clone();
 
     config.passcode_max_attempts = 3;
 

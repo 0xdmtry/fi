@@ -19,6 +19,12 @@ impl MailhogEmailer {
     }
 }
 
+impl Default for MailhogEmailer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 //Passcode
 #[derive(Template)]
 #[template(path = "passcode/html/default/default_passcode_template.html")]
@@ -53,7 +59,7 @@ struct FailedPasscodePlainTemplate {}
 impl Emailer for MailhogEmailer {
     fn save_email(
         &self,
-        config: &AppConfig,
+        _config: &AppConfig,
         db_conn: &DatabaseConnection,
         args: SaveEmailArgs,
     ) -> Result<()> {

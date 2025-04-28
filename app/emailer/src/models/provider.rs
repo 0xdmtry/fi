@@ -2,17 +2,12 @@ use crate::utils::normalize::normalize_str;
 use sea_orm::entity::prelude::*;
 use std::str::FromStr;
 
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
 #[sea_orm(rs_type = "String", db_type = "Text")]
 pub enum Provider {
     #[sea_orm(string_value = "mailhog")]
+    #[default]
     Mailhog,
-}
-
-impl Default for Provider {
-    fn default() -> Self {
-        Provider::Mailhog
-    }
 }
 
 impl FromStr for Provider {

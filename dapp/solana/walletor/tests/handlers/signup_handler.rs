@@ -1,14 +1,14 @@
-use walletor::config::AppConfig;
 use reqwest::{Client, StatusCode};
 use serde_json::json;
 use serial_test::serial;
 use uuid::Uuid;
+use walletor::config::AppConfig;
 
 #[tokio::test]
 #[serial]
 async fn test_signup_valid_user_returns_200() {
     let config = AppConfig::from_env_with_custom_file(".test.env");
-    let url = format!("{}/walletor/signup", config.walletor_test_url);
+    let url = format!("{}/v1/signup", config.walletor_test_url);
 
     let client = Client::new();
     let test_user_id = Uuid::new_v4();
@@ -25,7 +25,7 @@ async fn test_signup_valid_user_returns_200() {
 #[serial]
 async fn test_signup_missing_passcode_returns_422() {
     let config = AppConfig::from_env_with_custom_file(".test.env");
-    let url = format!("{}/walletor/signup", config.walletor_test_url);
+    let url = format!("{}/v1/signup", config.walletor_test_url);
 
     let client = Client::new();
     let test_user_id = Uuid::new_v4();
@@ -42,7 +42,7 @@ async fn test_signup_missing_passcode_returns_422() {
 #[serial]
 async fn test_signup_missing_user_id_returns_422() {
     let config = AppConfig::from_env_with_custom_file(".test.env");
-    let url = format!("{}/walletor/signup", config.walletor_test_url);
+    let url = format!("{}/v1/signup", config.walletor_test_url);
 
     let client = Client::new();
     let payload = json!({
@@ -58,7 +58,7 @@ async fn test_signup_missing_user_id_returns_422() {
 #[serial]
 async fn test_signup_empty_body_returns_422() {
     let config = AppConfig::from_env_with_custom_file(".test.env");
-    let url = format!("{}/walletor/signup", config.walletor_test_url);
+    let url = format!("{}/v1/signup", config.walletor_test_url);
 
     let client = Client::new();
     let res = client
@@ -74,9 +74,9 @@ async fn test_signup_empty_body_returns_422() {
 
 #[tokio::test]
 #[serial]
-async fn test_signup_invalid_uuid_returns_400() {
+async fn test_signup_invalid_uuid_returns_422() {
     let config = AppConfig::from_env_with_custom_file(".test.env");
-    let url = format!("{}/walletor/signup", config.walletor_test_url);
+    let url = format!("{}/v1/signup", config.walletor_test_url);
 
     let client = Client::new();
     let payload = r#"
@@ -94,5 +94,5 @@ async fn test_signup_invalid_uuid_returns_400() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::BAD_REQUEST);
+    assert_eq!(res.status(), StatusCode::UNPROCESSABLE_ENTITY);
 }

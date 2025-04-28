@@ -1,4 +1,3 @@
-use axum::ServiceExt;
 use authorizer::app;
 
 #[tokio::main]

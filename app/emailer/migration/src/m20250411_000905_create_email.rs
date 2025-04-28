@@ -1,8 +1,4 @@
-use sea_orm::sea_query::extension::postgres::Type;
-use sea_orm::sea_query::BinOper;
-use sea_orm::sea_query::Expr;
 use sea_orm_migration::prelude::*;
-use sea_query::Expr as QExpr;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

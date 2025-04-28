@@ -7,7 +7,7 @@ use uuid::Uuid;
 #[tokio::test]
 #[serial]
 async fn test_join_valid_email_returns_200() {
-    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
     let url = format!("{}/v1/join", config.authorizer_test_url);
 
     let client = Client::new();
@@ -21,7 +21,7 @@ async fn test_join_valid_email_returns_200() {
 #[tokio::test]
 #[serial]
 async fn test_join_invalid_email_returns_400() {
-    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
     let url = format!("{}/v1/join", config.authorizer_test_url);
 
     let client = Client::new();
@@ -34,7 +34,7 @@ async fn test_join_invalid_email_returns_400() {
 #[tokio::test]
 #[serial]
 async fn test_join_email_too_short_returns_400() {
-    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
     let url = format!("{}/v1/join", config.authorizer_test_url);
 
     let client = Client::new();
@@ -47,10 +47,9 @@ async fn test_join_email_too_short_returns_400() {
 #[tokio::test]
 #[serial]
 async fn test_join_email_too_long_returns_400() {
-    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
     let url = format!("{}/v1/join", config.authorizer_test_url);
 
-    let client = Client::new();
     let long_email = format!("{}@example.com", "a".repeat(255));
     let payload = json!({ "email": long_email });
 
@@ -61,7 +60,7 @@ async fn test_join_email_too_long_returns_400() {
 #[tokio::test]
 #[serial]
 async fn test_join_email_with_leading_dot_returns_400() {
-    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
     let url = format!("{}/v1/join", config.authorizer_test_url);
 
     let client = Client::new();
@@ -74,7 +73,7 @@ async fn test_join_email_with_leading_dot_returns_400() {
 #[tokio::test]
 #[serial]
 async fn test_join_missing_email_field_returns_422() {
-    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
     let url = format!("{}/v1/join", config.authorizer_test_url);
 
     let client = Client::new();
@@ -87,7 +86,7 @@ async fn test_join_missing_email_field_returns_422() {
 #[tokio::test]
 #[serial]
 async fn test_join_empty_body_returns_422() {
-    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
     let url = format!("{}/v1/join", config.authorizer_test_url);
 
     let client = Client::new();
@@ -106,7 +105,7 @@ async fn test_join_empty_body_returns_422() {
 #[tokio::test]
 #[serial]
 async fn test_join_uppercase_email_normalized_returns_200() {
-    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
     let url = format!("{}/v1/join", config.authorizer_test_url);
 
     let client = Client::new();
@@ -120,7 +119,7 @@ async fn test_join_uppercase_email_normalized_returns_200() {
 #[tokio::test]
 #[serial]
 async fn test_join_same_email_twice_returns_200() {
-    let mut config = AppConfig::from_env_with_custom_file(".test.env");
+    let config = AppConfig::from_env_with_custom_file(".test.env");
     let url = format!("{}/v1/join", config.authorizer_test_url);
 
     let client = Client::new();

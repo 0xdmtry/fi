@@ -1,7 +1,4 @@
-use chrono::Utc;
-use sea_orm::{
-    ActiveModelTrait, ColumnTrait, Database, DbConn, EntityTrait, IntoActiveModel, QueryFilter, Set,
-};
+use sea_orm::{ColumnTrait, Database, DbConn, EntityTrait, QueryFilter};
 use uuid::Uuid;
 use walletor::config::AppConfig;
 use walletor::models::{encryption_secret, wallet, wallet_share};

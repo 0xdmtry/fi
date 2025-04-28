@@ -30,8 +30,8 @@ impl AppConfig {
             .ok()
             .and_then(|v| v.parse::<u32>().ok());
 
-        let db_conn_max_attempts: u32 = match (db_max_attempts) {
-            (Some(attempts)) if attempts > 0 => attempts,
+        let db_conn_max_attempts: u32 = match db_max_attempts {
+            Some(attempts) if attempts > 0 => attempts,
             _ => default_db_conn_max_attempts,
         };
 
@@ -41,8 +41,8 @@ impl AppConfig {
             .ok()
             .and_then(|v| v.parse::<u64>().ok());
 
-        let db_conn_retry_delay_seconds = match (db_retry_delay_seconds) {
-            (Some(seconds)) if seconds > 0 => seconds,
+        let db_conn_retry_delay_seconds = match db_retry_delay_seconds {
+            Some(seconds) if seconds > 0 => seconds,
             _ => default_db_conn_retry_delay_seconds,
         };
 

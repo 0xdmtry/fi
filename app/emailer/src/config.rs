@@ -46,8 +46,8 @@ impl AppConfig {
             .ok()
             .and_then(|v| v.parse::<i32>().ok());
 
-        let max_reties = match (reties) {
-            (Some(retries)) if retries > 0 => retries,
+        let max_reties = match reties {
+            Some(retries) if retries > 0 => retries,
             _ => default_max_retries,
         };
 
@@ -55,8 +55,8 @@ impl AppConfig {
             .ok()
             .and_then(|v| v.parse::<u32>().ok());
 
-        let db_conn_max_attempts: u32 = match (db_max_attempts) {
-            (Some(attempts)) if attempts > 0 => attempts,
+        let db_conn_max_attempts: u32 = match db_max_attempts {
+            Some(attempts) if attempts > 0 => attempts,
             _ => default_db_conn_max_attempts,
         };
 
@@ -64,8 +64,8 @@ impl AppConfig {
             .ok()
             .and_then(|v| v.parse::<u64>().ok());
 
-        let db_conn_retry_delay_seconds = match (db_retry_delay_seconds) {
-            (Some(seconds)) if seconds > 0 => seconds,
+        let db_conn_retry_delay_seconds = match db_retry_delay_seconds {
+            Some(seconds) if seconds > 0 => seconds,
             _ => default_db_conn_retry_delay_seconds,
         };
 
@@ -80,8 +80,8 @@ impl AppConfig {
         let mailhog_port_value = env::var("MAILHOG_PORT")
             .ok()
             .and_then(|v| v.parse::<u16>().ok());
-        let mailhog_port = match (mailhog_port_value) {
-            (Some(port)) if port > 0 => port,
+        let mailhog_port = match mailhog_port_value {
+            Some(port) if port > 0 => port,
             _ => default_mailhog_port,
         };
 
@@ -89,8 +89,8 @@ impl AppConfig {
         let mailhog_test_port_value = env::var("MAILHOG_TEST_PORT")
             .ok()
             .and_then(|v| v.parse::<u16>().ok());
-        let mailhog_test_port = match (mailhog_test_port_value) {
-            (Some(port)) if port > 0 => port,
+        let mailhog_test_port = match mailhog_test_port_value {
+            Some(port) if port > 0 => port,
             _ => default_mailhog_test_port,
         };
 

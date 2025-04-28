@@ -13,3 +13,9 @@ down:
 
 # Restart dev stack
 restart: down up
+
+# Run tests
+test:
+	cargo test --manifest-path ../../app/authorizer/Cargo.toml
+	cargo test --manifest-path ../../app/emailer/Cargo.toml
+	cargo test --manifest-path ../../dapp/solana/walletor/Cargo.toml

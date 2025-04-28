@@ -4,7 +4,7 @@ use anyhow::{Result, anyhow};
 use rand::rngs::OsRng as SecureOsRng;
 use rand_core::RngCore;
 use scrypt::{Params, scrypt};
-use solana_sdk::signature::{Keypair, Signer};
+use solana_sdk::signature::Keypair;
 
 /// Generate a new random Solana Keypair
 pub fn generate_solana_keypair() -> Keypair {

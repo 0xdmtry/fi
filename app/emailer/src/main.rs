@@ -1,4 +1,3 @@
-use axum::ServiceExt;
 use emailer::app;
 
 #[tokio::main]

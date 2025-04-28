@@ -5,7 +5,7 @@ use crate::services::email_client;
 use crate::utils::normalize::normalize_string;
 use anyhow::{Result, anyhow};
 use chrono::Utc;
-use sea_orm::{DbConn, EntityTrait};
+use sea_orm::DbConn;
 
 pub async fn get_or_create_passcode(
     db: &DbConn,
@@ -30,7 +30,7 @@ pub async fn verify_passcode(
         .await?
         .ok_or_else(|| anyhow!("User not found"))?;
 
-    if let Some(pass) =
+    if let Some(_pass) =
         passcode_repository::find_matching_active_passcode(db, user.id, input_code).await?
     {
         passcode_repository::mark_all_active_codes_used(db, user.id).await?;
@@ -61,7 +61,7 @@ pub async fn resend_passcode(db: &DbConn, config: &AppConfig, email: &str) -> an
 
     let now = Utc::now();
 
-    if let Some(mut active_passcode) = passcode_repository::find_active_by_user_id(db, user.id)
+    if let Some(active_passcode) = passcode_repository::find_active_by_user_id(db, user.id)
         .await?
         .filter(|p| p.resend_count < config.passcode_max_resends as i32)
         .filter(|p| p.attempt_count < config.passcode_max_attempts as i32)
