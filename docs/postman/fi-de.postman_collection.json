@@ -261,6 +261,33 @@
 														}
 													},
 													"response": []
+												},
+												{
+													"name": "signup",
+													"request": {
+														"method": "POST",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"user_id\": \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n  \"passcode\": \"1234\"\n}\n",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{dev_solana_walletor_host}}/v1/signup",
+															"host": [
+																"{{dev_solana_walletor_host}}"
+															],
+															"path": [
+																"v1",
+																"signup"
+															]
+														}
+													},
+													"response": []
 												}
 											]
 										}
