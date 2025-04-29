@@ -2,9 +2,12 @@ use crate::config::AppConfig;
 use crate::db::{self, connection};
 use crate::models::Provider;
 use crate::routes;
+use crate::routes::metrics_routes;
 use crate::services::{Emailer, MailhogEmailer};
 use crate::state::AppState;
 use axum::Router;
+use metrics_exporter_prometheus::PrometheusBuilder;
+use metrics_exporter_prometheus::PrometheusHandle;
 use std::sync::Arc;
 
 pub async fn create_app() -> Router {
@@ -13,6 +16,10 @@ pub async fn create_app() -> Router {
     let emailer: Arc<dyn Emailer> = match config.email_provider {
         Provider::Mailhog => Arc::new(MailhogEmailer::new()),
     };
+
+    let prometheus_handle: PrometheusHandle = PrometheusBuilder::new()
+        .install_recorder()
+        .expect("Failed to install Prometheus recorder");
 
     let state = AppState {
         config,
@@ -24,5 +31,6 @@ pub async fn create_app() -> Router {
 
     Router::new()
         .nest("/v1", routes::v1::routes())
+        .merge(metrics_routes(prometheus_handle))
         .with_state(state)
 }

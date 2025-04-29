@@ -1,3 +1,6 @@
+mod passcode;
 mod ping;
 pub mod v1;
-mod passcode;
+
+pub mod metrics;
+pub use metrics::metrics_routes;

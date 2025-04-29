@@ -1,12 +1,19 @@
 use crate::config::AppConfig;
 use crate::db::{self, connection};
 use crate::routes;
+use crate::routes::metrics_routes;
 use crate::state::AppState;
 use axum::Router;
+use metrics_exporter_prometheus::PrometheusBuilder;
+use metrics_exporter_prometheus::PrometheusHandle;
 
 pub async fn create_app() -> Router {
     let config = AppConfig::from_env();
     let db_conn = connection::establish_connection(&config).await;
+
+    let prometheus_handle: PrometheusHandle = PrometheusBuilder::new()
+        .install_recorder()
+        .expect("Failed to install Prometheus recorder");
 
     let state = AppState { config, db_conn };
 
@@ -14,5 +21,6 @@ pub async fn create_app() -> Router {
 
     Router::new()
         .nest("/v1", routes::v1::routes())
+        .merge(metrics_routes(prometheus_handle))
         .with_state(state)
 }

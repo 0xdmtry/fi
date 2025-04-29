@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'app-authorizer'
+    static_configs:
+      - targets: [ 'app-authorizer:8000' ]
+
+  - job_name: 'app-emailer'
+    static_configs:
+      - targets: [ 'app-emailer:8001' ]
+
+  - job_name: 'dapp-solana-walletor'
+    static_configs:
+      - targets: [ 'dapp-solana-walletor:8002' ]
+
+  - job_name: 'dapp-solana-ts-agg'
+    static_configs:
+      - targets: [ 'dapp-solana-ts-agg:8003' ]
