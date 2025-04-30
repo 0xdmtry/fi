@@ -10,6 +10,9 @@ pub struct AppConfig {
     pub emailer_url: String,
     pub emailer_test_url: String,
 
+    pub walletor_url: String,
+    pub walletor_test_url: String,
+
     pub authorizer_test_url: String,
 
     pub passcode_ttl_seconds: i64,
@@ -129,6 +132,10 @@ impl AppConfig {
             .unwrap_or(false);
         let emailer_url = env::var("EMAILER_URL").unwrap_or_default();
         let emailer_test_url = env::var("EMAILER_TEST_URL").unwrap_or_default();
+
+        let walletor_url = env::var("WALLETOR_URL").unwrap_or_default();
+        let walletor_test_url = env::var("WALLETOR_TEST_URL").unwrap_or_default();
+        
         let authorizer_test_url = env::var("AUTHORIZER_TEST_URL").unwrap_or_default();
 
         Self {
@@ -145,9 +152,15 @@ impl AppConfig {
 
             database_url,
             database_test_url,
+            
             run_migrations,
+            
             emailer_url,
             emailer_test_url,
+            
+            walletor_url,
+            walletor_test_url,
+            
             authorizer_test_url,
         }
     }
