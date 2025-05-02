@@ -1,0 +1,20 @@
+services:
+
+  #  Solana: Aggregator
+  dapp-solana-ts-agg:
+    container_name: dapp-solana-ts-agg
+    build:
+      context: ../../dapp/solana/aggregator/ts-agg
+      dockerfile: TsAgg.dev.dockerfile
+    restart: always
+    ports:
+      - "8005:8003"
+    volumes:
+      - ../../dapp/solana/aggregator/ts-agg:/app
+      - /app/node_modules
+    networks:
+      - fi-solana-agg-net
+
+networks:
+  fi-solana-agg-net:
+    driver: bridge

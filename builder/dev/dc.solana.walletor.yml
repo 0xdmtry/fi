@@ -1,0 +1,45 @@
+services:
+
+  #  Solana: Walletor: App
+  dapp-solana-walletor:
+    container_name: dapp-solana-walletor
+    build:
+      context: ../../dapp/solana/walletor
+      dockerfile: Walletor.dev.dockerfile
+    restart: always
+    depends_on:
+      db-dapp-solana-walletor:
+        condition: service_started
+    ports:
+      - "8003:8000"
+    volumes:
+      - ../../dapp/solana/walletor/src:/app/src
+      - ../../dapp/solana/walletor/migration:/app/migration
+      - ../../dapp/solana/walletor/tests:/app/tests
+      - ../../dapp/solana/walletor/Cargo.toml:/app/Cargo.toml
+      - ../../dapp/solana/walletor/Cargo.lock:/app/Cargo.lock
+      - /app/target
+    networks:
+      - fi-solana-walletor-net
+
+  #  Solana: Walletor: DB
+  db-dapp-solana-walletor:
+    container_name: db-dapp-solana-walletor
+    image: postgres:17.4
+    restart: always
+    environment:
+      POSTGRES_DB: walletor
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - .dbdata/postgres/dev/solana_walletor/:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - fi-solana-walletor-net
+
+
+
+networks:
+  fi-solana-walletor-net:
+    driver: bridge

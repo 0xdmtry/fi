@@ -1,0 +1,44 @@
+services:
+
+  # Authorizer: App
+  app-authorizer:
+    container_name: app-authorizer
+    build:
+      context: ../../app/authorizer
+      dockerfile: Authorizer.dev.dockerfile
+    restart: always
+    ports:
+      - "8001:8000"
+    volumes:
+      - ../../app/authorizer/src:/app/src
+      - ../../app/authorizer/migration:/app/migration
+      - ../../app/authorizer/tests:/app/tests
+      - ../../app/authorizer/Cargo.toml:/app/Cargo.toml
+      - ../../app/authorizer/Cargo.lock:/app/Cargo.lock
+      - /app/target
+    depends_on:
+      db-app-authorizer:
+        condition: service_started
+    networks:
+      - fi-authorizer-net
+
+  # Authorizer: DB
+  db-app-authorizer:
+    container_name: db-app-authorizer
+    image: postgres:17.4
+    restart: always
+    environment:
+      POSTGRES_DB: authorizer
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - .dbdata/postgres/dev/authorizer/:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+    networks:
+      - fi-authorizer-net
+
+
+networks:
+  fi-authorizer-net:
+    driver: bridge

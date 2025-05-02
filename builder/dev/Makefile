@@ -1,17 +1,19 @@
-# Default compose file
-COMPOSE_FILE=docker-compose.yml
+COMPOSE_FILES = \
+	-f dc.authorizer.fe.yml \
+	-f dc.authorizer.yml \
+	-f dc.emailer.yml \
+	-f dc.observability.yml \
+	-f dc.solana.aggregator.yml \
+	-f dc.solana.walletor.yml
 
-.PHONY: up down restart
+.PHONY: up down restart test
 
-# Make sure entrypoint scripts are executable and start dev stack
 up:
-	docker compose -f $(COMPOSE_FILE) up --build
+	docker compose $(COMPOSE_FILES) up --build
 
-# Stop dev stack
 down:
-	docker compose -f $(COMPOSE_FILE) down
+	docker compose $(COMPOSE_FILES) down
 
-# Restart dev stack
 restart: down up
 
 test:
