@@ -21,3 +21,26 @@ test:
 	cargo test --manifest-path ../../app/authorizer/Cargo.toml
 	cargo test --manifest-path ../../app/emailer/Cargo.toml
 	cargo test --manifest-path ../../dapp/solana/walletor/Cargo.toml
+
+
+# Individual stack commands
+up-auth-fe:
+	docker compose -f dc.authorizer.fe.yml up --build
+
+up-auth:
+	docker compose -f dc.authorizer.yml up --build
+
+up-emailer:
+	docker compose -f dc.emailer.yml up --build
+
+up-ob:
+	docker compose -f dc.observability.yml up --build
+
+up-sol-agg:
+	docker compose -f dc.solana.aggregator.yml up --build
+
+up-sol-tx:
+	docker compose -f dc.solana.tx.yml up --build
+
+up-sol-wal:
+	docker compose -f dc.solana.walletor.yml up --build
