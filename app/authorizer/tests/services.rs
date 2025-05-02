@@ -6,3 +6,5 @@ mod email_client;
 
 #[path = "services/user_service.rs"]
 mod user_service;
+#[path = "services/walletor_client.rs"]
+mod wallet_service;
