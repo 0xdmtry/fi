@@ -4,6 +4,7 @@ COMPOSE_FILES = \
 	-f dc.emailer.yml \
 	-f dc.observability.yml \
 	-f dc.solana.aggregator.yml \
+	-f dc.solana.tx.yml \
 	-f dc.solana.walletor.yml
 
 .PHONY: up down restart test

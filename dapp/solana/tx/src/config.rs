@@ -1,10 +1,7 @@
-use crate::models::Provider;
 use std::env;
 
 #[derive(Debug, Clone)]
 pub struct AppConfig {
-    pub email_provider: Provider,
-
     pub max_reties: i32,
 
     pub db_conn_max_attempts: u32,
@@ -14,14 +11,6 @@ pub struct AppConfig {
 
     pub database_url: String,
     pub database_test_url: String,
-
-    pub mailhog_server: String,
-    pub mailhog_port: u16,
-
-    pub mailhog_test_server: String,
-    pub mailhog_test_port: u16,
-
-    pub emailer_test_url: String,
 }
 
 impl AppConfig {
@@ -32,15 +21,7 @@ impl AppConfig {
 
         let default_db_conn_max_attempts: u32 = 10;
 
-        let default_mailhog_port: u16 = 1025;
-        let default_mailhog_test_port: u16 = 1125;
-
         let default_db_conn_retry_delay_seconds: u64 = 2;
-
-        let email_provider = env::var("EMAIL_PROVIDER")
-            .ok()
-            .and_then(|v| v.parse::<Provider>().ok())
-            .unwrap_or_default();
 
         let reties = env::var("MAX_RETRIES")
             .ok()
@@ -76,29 +57,7 @@ impl AppConfig {
         let database_url = env::var("DATABASE_URL").unwrap_or_default();
         let database_test_url = env::var("DATABASE_TEST_URL").unwrap_or_default();
 
-        let mailhog_server = env::var("MAILHOG_SERVER").unwrap_or_default();
-        let mailhog_port_value = env::var("MAILHOG_PORT")
-            .ok()
-            .and_then(|v| v.parse::<u16>().ok());
-        let mailhog_port = match mailhog_port_value {
-            Some(port) if port > 0 => port,
-            _ => default_mailhog_port,
-        };
-
-        let mailhog_test_server = env::var("MAILHOG_TEST_SERVER").unwrap_or_default();
-        let mailhog_test_port_value = env::var("MAILHOG_TEST_PORT")
-            .ok()
-            .and_then(|v| v.parse::<u16>().ok());
-        let mailhog_test_port = match mailhog_test_port_value {
-            Some(port) if port > 0 => port,
-            _ => default_mailhog_test_port,
-        };
-
-        let emailer_test_url = env::var("EMAILER_TEST_URL").unwrap_or_default();
-
         Self {
-            email_provider,
-
             max_reties,
 
             db_conn_max_attempts,
@@ -108,14 +67,6 @@ impl AppConfig {
 
             database_url,
             database_test_url,
-
-            mailhog_server,
-            mailhog_port,
-
-            mailhog_test_server,
-            mailhog_test_port,
-
-            emailer_test_url,
         }
     }
 

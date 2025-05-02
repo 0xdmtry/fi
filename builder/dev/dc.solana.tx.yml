@@ -11,7 +11,7 @@ services:
       db-dapp-solana-tx:
         condition: service_started
     ports:
-      - "8004:8002"
+      - "8004:8000"
     volumes:
       - ../../dapp/solana/tx/src:/app/src
       - ../../dapp/solana/tx/migration:/app/migration

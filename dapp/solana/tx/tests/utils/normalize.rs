@@ -1,4 +1,4 @@
-use emailer::utils::normalize::normalize_str;
+use tx::utils::normalize::normalize_str;
 
 #[test]
 fn test_email_cases_normalization() {

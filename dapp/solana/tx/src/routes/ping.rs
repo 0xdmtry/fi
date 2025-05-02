@@ -6,5 +6,5 @@ pub fn routes() -> Router<AppState> {
 }
 
 async fn ping() -> impl IntoResponse {
-    "emailer-v0.2.1"
+    "tx-v0.2.1"
 }

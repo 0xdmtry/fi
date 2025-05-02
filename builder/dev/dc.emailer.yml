@@ -11,7 +11,7 @@ services:
       db-app-emailer:
         condition: service_started
     ports:
-      - "8002:8001"
+      - "8002:8000"
     volumes:
       - ../../app/emailer/src:/app/src
       - ../../app/emailer/migration:/app/migration

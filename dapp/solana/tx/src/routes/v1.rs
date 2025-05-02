@@ -1,9 +1,7 @@
-use axum::Router;
-use crate::state::AppState;
 use super::ping;
-use super::passcode;
+use crate::state::AppState;
+use axum::Router;
 
 pub fn routes() -> Router<AppState> {
-    Router::new()
-        .merge(ping::routes()) // All v1 routes go here
+    Router::new().merge(ping::routes()) // All v1 routes go here
 }
