@@ -325,6 +325,34 @@
 											]
 										}
 									]
+								},
+								{
+									"name": "tx",
+									"item": [
+										{
+											"name": "v1",
+											"item": [
+												{
+													"name": "ping",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{dev_solana_tx_host}}/v1/ping",
+															"host": [
+																"{{dev_solana_tx_host}}"
+															],
+															"path": [
+																"v1",
+																"ping"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										}
+									]
 								}
 							]
 						}
@@ -495,22 +523,32 @@
 	"variable": [
 		{
 			"key": "dev_authorizer_host",
-			"value": "http://localhost:8000",
-			"type": "string"
-		},
-		{
-			"key": "dev_emailer_host",
 			"value": "http://localhost:8001",
 			"type": "string"
 		},
 		{
-			"key": "dev_solana_walletor_host",
+			"key": "dev_authorizer_fe_host",
+			"value": "http://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "dev_emailer_host",
 			"value": "http://localhost:8002",
 			"type": "string"
 		},
 		{
-			"key": "dev_solana_ts_agg_host",
+			"key": "dev_solana_walletor_host",
 			"value": "http://localhost:8003",
+			"type": "string"
+		},
+		{
+			"key": "dev_solana_tx_host",
+			"value": "http://localhost:8004",
+			"type": "string"
+		},
+		{
+			"key": "dev_solana_ts_agg_host",
+			"value": "http://localhost:8005",
 			"type": "string"
 		},
 		{
