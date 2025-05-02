@@ -1,4 +1,6 @@
 services:
+
+  # Authorizer: App
   app-authorizer:
     container_name: app-authorizer
     build:
@@ -22,6 +24,7 @@ services:
     networks:
       - fi-network
 
+  # Authorizer: DB
   db-app-authorizer:
     container_name: db-app-authorizer
     image: postgres:17.4
@@ -37,6 +40,7 @@ services:
     networks:
       - fi-network
 
+  # Emailer: App
   app-emailer:
     container_name: app-emailer
     build:
@@ -58,6 +62,8 @@ services:
     networks:
       - fi-network
 
+
+  # Emailer: DB
   db-app-emailer:
     container_name: db-app-emailer
     image: postgres:17.4
@@ -73,6 +79,18 @@ services:
     networks:
       - fi-network
 
+
+  #  Emailer: Mailhog
+  mailhog:
+    container_name: mailhog
+    image: "mailhog/mailhog:latest"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - fi-network
+
+  #  Solana: Walletor: App
   dapp-solana-walletor:
     container_name: dapp-solana-walletor
     build:
@@ -94,6 +112,7 @@ services:
     networks:
       - fi-network
 
+  #  Solana: Walletor: DB
   db-dapp-solana-walletor:
     container_name: db-dapp-solana-walletor
     image: postgres:17.4
@@ -109,6 +128,7 @@ services:
     networks:
       - fi-network
 
+  #  Solana: Aggregator
   dapp-solana-ts-agg:
     container_name: dapp-solana-ts-agg
     build:
@@ -123,15 +143,45 @@ services:
     networks:
       - fi-network
 
-  mailhog:
-    container_name: mailhog
-    image: "mailhog/mailhog:latest"
+  #  Solana: Tx: App
+  dapp-solana-tx:
+    container_name: dapp-solana-tx
+    build:
+      context: ../../dapp/solana/tx
+      dockerfile: Tx.dev.dockerfile
+    restart: always
+    depends_on:
+      db-dapp-solana-tx:
+        condition: service_started
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "8005:8002"
+    volumes:
+      - ../../dapp/solana/tx/src:/app/src
+      - ../../dapp/solana/tx/migration:/app/migration
+      - ../../dapp/solana/tx/tests:/app/tests
+      - ../../dapp/solana/tx/Cargo.toml:/app/Cargo.toml
+      - ../../dapp/solana/tx/Cargo.lock:/app/Cargo.lock
+      - /app/target
     networks:
       - fi-network
 
+  #  Solana: Tx: DB
+  db-dapp-solana-tx:
+    container_name: db-dapp-solana-tx
+    image: postgres:17.4
+    restart: always
+    environment:
+      POSTGRES_DB: tx
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - .dbdata/postgres/dev/solana_tx/:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    networks:
+      - fi-network
+
+  #  Observability: Prometheus
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
@@ -144,6 +194,7 @@ services:
     networks:
       - fi-network
 
+  #  Observability: Grafana
   grafana:
     container_name: grafana
     image: grafana/grafana:latest

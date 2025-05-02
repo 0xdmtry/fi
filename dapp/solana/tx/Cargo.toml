@@ -1,0 +1,56 @@
+[package]
+name = "tx"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# --- Core Runtime ---
+tokio = { version = "1.44.1", features = ["full"] }                     # Async runtime for Axum, SeaORM, and other async ops
+axum = "0.8.3"                                                          # Web framework for building APIs and routing requests
+serde = { version = "1.0.219", features = ["derive"] }                  # Serialize/deserialize data structures (e.g., JSON, DB)
+serde_json = "1.0.140"                                                  # JSON encoding/decoding support via Serde
+uuid = { version = "1.16.0", features = ["v4", "serde"] }               # Generate UUIDs for user IDs and other unique IDs
+chrono = { version = "0.4.40", features = ["serde"] }                   # Handle timestamps, used for created_at/updated_at fields
+dotenvy = "0.15.7"                                                      # Load environment variables from `.env` file
+anyhow = "1.0.97"
+
+# --- Database ---
+sea-orm = { version = "1.1.8", features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros"] }  # Async ORM for PostgreSQL
+sea-orm-migration = "1.1.8"                                             # Schema migrations for managing DB tables and changes
+
+# --- Tracing and Logging ---
+tracing = "0.1.41"                                                      # Structured logging (alternative to println! / log crate)
+tracing-subscriber = { version = "0.3.19", features = ["env-filter", "fmt", "json"] } # Log filtering and formatting (env-driven)
+console-subscriber = "0.4.1"                                            # Live flamegraph view of async tasks in `tokio-console`
+
+# --- Validation ---
+validator = { version = "0.20.0", features = ["derive"] }               # Input validation for API payloads (e.g., email, length)
+
+# --- Security ---
+argon2 = "0.5.3"                                                        # Password hashing (secure storage of user passwords)
+rand = "0.9.0"                                                          # Random values for tokens, salts, etc.
+jsonwebtoken = "9.3.1"                                                  # JWT creation/validation for auth (access tokens, etc.)
+
+# --- HTTP Client (for external APIs, like email providers) ---
+reqwest = { version = "0.12.15", features = ["json", "multipart", "gzip", "brotli", "deflate", "rustls-tls"] } # Send HTTP requests to services like SendGrid, Mailgun, etc.
+
+# --- Metrics and Observability ---
+metrics = "0.24.1"                                                      # Record runtime metrics (counters, histograms, etc.)
+metrics-exporter-prometheus = "0.16.2"                                  # Expose Prometheus-compatible metrics endpoint
+tracing-opentelemetry = "0.30.0"                                        # Export traces to OpenTelemetry collectors (e.g., Jaeger)
+opentelemetry = "0.29.0"         # OpenTelemetry core lib with Tokio runtime
+opentelemetry-jaeger = "0.22.0"                                         # Jaeger exporter for OpenTelemetry traces
+
+# --- Migration ---
+migration = { path = "./migration" }
+
+
+[dev-dependencies]
+# --- Dev-only: for advanced testing patterns ---
+pretty_assertions = "1.4.1"                                             # Pretty diff output when assertions fail in tests
+test-case = "3.3.1"                                                     # Parameterized test cases (multiple inputs per test)
+fake = "4.2.0"                                                          # Generate fake test data (names, emails, etc.)
+mockall = "0.13.1"                                                      # Create mocks for testing trait-based services
+serial_test = "3.2.0"
+
+
