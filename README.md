@@ -1,4 +1,6 @@
-# 🔐 Auth System — Microservice-Based Architecture
+# 🔐 Microservice-Based MPC-based Distributed System
+
+![System Architecture](./docs/images/fi-v1-002-001.drawio.png)
 
 This project is a modular, testable authentication and passcode delivery system built with Rust. It includes multiple microservices, each focused on a single responsibility, and is orchestrated with Docker Compose.
 
