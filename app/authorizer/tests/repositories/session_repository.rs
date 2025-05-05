@@ -2,7 +2,9 @@ use authorizer::config::AppConfig;
 use authorizer::models::{session, user};
 use authorizer::repositories::{session_repository, user_repository};
 use chrono::{Duration, Utc};
-use sea_orm::{Database, DbConn, EntityTrait};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, Database, DbConn, EntityTrait, IntoActiveModel, QueryFilter, Set,
+};
 use uuid::Uuid;
 
 #[tokio::test]

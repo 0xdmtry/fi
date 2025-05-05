@@ -8,3 +8,6 @@ mod email_client;
 mod user_service;
 #[path = "services/walletor_client.rs"]
 mod wallet_service;
+
+#[path = "services/session_service.rs"]
+mod session_service;
