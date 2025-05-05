@@ -12,10 +12,27 @@ impl MigrationTrait for Migration {
                     .table(Users::Table)
                     .if_not_exists()
                     .col(ColumnDef::new(Users::Id).uuid().not_null().primary_key())
-                    .col(ColumnDef::new(Users::Email).string_len(254).not_null().unique_key())
-                    .col(ColumnDef::new(Users::CreatedAt).timestamp_with_time_zone().not_null())
-                    .col(ColumnDef::new(Users::UpdatedAt).timestamp_with_time_zone().not_null())
-                    .col(ColumnDef::new(Users::DeletedAt).timestamp_with_time_zone().null())
+                    .col(
+                        ColumnDef::new(Users::Email)
+                            .string_len(254)
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(
+                        ColumnDef::new(Users::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Users::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Users::DeletedAt)
+                            .timestamp_with_time_zone()
+                            .null(),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -25,15 +42,42 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Passcodes::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Passcodes::Id).uuid().not_null().primary_key())
+                    .col(
+                        ColumnDef::new(Passcodes::Id)
+                            .uuid()
+                            .not_null()
+                            .primary_key(),
+                    )
                     .col(ColumnDef::new(Passcodes::UserId).uuid().not_null())
                     .col(ColumnDef::new(Passcodes::Code).string_len(16).not_null())
-                    .col(ColumnDef::new(Passcodes::AttemptCount).integer().not_null().default(0))
-                    .col(ColumnDef::new(Passcodes::ResendCount).integer().not_null().default(0))
+                    .col(
+                        ColumnDef::new(Passcodes::AttemptCount)
+                            .integer()
+                            .not_null()
+                            .default(0),
+                    )
+                    .col(
+                        ColumnDef::new(Passcodes::ResendCount)
+                            .integer()
+                            .not_null()
+                            .default(0),
+                    )
                     .col(ColumnDef::new(Passcodes::Used).boolean().not_null())
-                    .col(ColumnDef::new(Passcodes::ExpiredAt).timestamp_with_time_zone().not_null())
-                    .col(ColumnDef::new(Passcodes::CreatedAt).timestamp_with_time_zone().not_null())
-                    .col(ColumnDef::new(Passcodes::UpdatedAt).timestamp_with_time_zone().not_null())
+                    .col(
+                        ColumnDef::new(Passcodes::ExpiredAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Passcodes::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Passcodes::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-passcode-user_id")
@@ -46,7 +90,6 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        
         manager
             .create_index(
                 Index::create()
@@ -90,12 +133,65 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        manager
+            .create_table(
+                Table::create()
+                    .table(Sessions::Table)
+                    .if_not_exists()
+                    .col(ColumnDef::new(Sessions::Id).uuid().not_null().primary_key())
+                    .col(ColumnDef::new(Sessions::UserId).uuid().not_null())
+                    .col(
+                        ColumnDef::new(Sessions::UserAgent)
+                            .string_len(512)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Sessions::IpAddress)
+                            .string_len(45)
+                            .not_null(),
+                    ) // IPv6-compatible
+                    .col(
+                        ColumnDef::new(Sessions::ExpiresAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Sessions::RevokedAt)
+                            .timestamp_with_time_zone()
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(Sessions::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Sessions::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-session-user_id")
+                            .from(Sessions::Table, Sessions::UserId)
+                            .to(Users::Table, Users::Id)
+                            .on_delete(ForeignKeyAction::Cascade)
+                            .on_update(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager.drop_table(Table::drop().table(Passcodes::Table).to_owned()).await?;
-        manager.drop_table(Table::drop().table(Users::Table).to_owned()).await?;
+        manager
+            .drop_table(Table::drop().table(Passcodes::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(Users::Table).to_owned())
+            .await?;
         Ok(())
     }
 }
@@ -120,6 +216,19 @@ enum Passcodes {
     ResendCount,
     Used,
     ExpiredAt,
+    CreatedAt,
+    UpdatedAt,
+}
+
+#[derive(Iden)]
+enum Sessions {
+    Table,
+    Id,
+    UserId,
+    UserAgent,
+    IpAddress,
+    ExpiresAt,
+    RevokedAt,
     CreatedAt,
     UpdatedAt,
 }
