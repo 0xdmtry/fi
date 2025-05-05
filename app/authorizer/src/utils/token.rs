@@ -21,7 +21,7 @@ pub fn generate_jwt(config: &AppConfig, user: &user::Model) -> Result<String> {
         sub: user.id.to_string(),
         iat: now.timestamp() as usize,
         exp: expiration.timestamp() as usize,
-    }
+    };
 
     let token = encode(
         &Header::default(),

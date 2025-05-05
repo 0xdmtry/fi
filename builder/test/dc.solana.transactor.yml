@@ -1,0 +1,45 @@
+services:
+
+  #  Solana: Transactor: App
+  test-dapp-solana-transactor:
+    container_name: test-dapp-solana-transactor
+    build:
+      context: ../../dapp/solana/transactor
+      dockerfile: Transactor.test.dockerfile
+    restart: always
+    depends_on:
+      db-dapp-solana-transactor:
+        condition: service_started
+    ports:
+      - "8104:8000"
+    volumes:
+      - ../../dapp/solana/transactor/src:/app/src
+      - ../../dapp/solana/transactor/migration:/app/migration
+      - ../../dapp/solana/transactor/tests:/app/tests
+      - ../../dapp/solana/transactor/Cargo.toml:/app/Cargo.toml
+      - ../../dapp/solana/transactor/Cargo.lock:/app/Cargo.lock
+      - /app/target
+    networks:
+      - fi-solana-transactor-net
+
+  #  Solana: Transactor: DB
+  test-db-dapp-solana-transactor:
+    container_name: db-dapp-solana-transactor
+    image: postgres:17.4
+    restart: always
+    environment:
+      POSTGRES_DB: transactor
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - .dbdata/postgres/dev/solana_tx/:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - fi-solana-transactor-net
+
+
+networks:
+  fi-solana-transactor-net:
+    driver: bridge
+

@@ -17,6 +17,9 @@ fn clear_env() {
         "RUN_MIGRATIONS",
         "DB_CONN_MAX_ATTEMPTS",
         "DB_CONN_RETRY_DELAY_SECONDS",
+        "SESSION_TTL_SECONDS",
+        "ACCESS_TOKEN_TTL_SECONDS",
+        "JWT_SECRET",
     ] {
         unsafe { env::remove_var(key) };
     }
@@ -41,6 +44,9 @@ fn test_defaults_applied() {
     assert!(!config.run_migrations);
     assert_eq!(config.db_conn_max_attempts, 10);
     assert_eq!(config.db_conn_retry_delay_seconds, 2);
+    assert_eq!(config.session_ttl_seconds, 604800);
+    assert_eq!(config.access_token_ttl_seconds, 900);
+    assert_eq!(config.jwt_secret, "");
 }
 
 #[test]
@@ -62,6 +68,10 @@ fn test_valid_env_values() {
         env::set_var("RUN_MIGRATIONS", "true");
         env::set_var("DB_CONN_MAX_ATTEMPTS", "20");
         env::set_var("DB_CONN_RETRY_DELAY_SECONDS", "3");
+
+        env::set_var("SESSION_TTL_SECONDS", "1000");
+        env::set_var("ACCESS_TOKEN_TTL_SECONDS", "100");
+        env::set_var("JWT_SECRET", "secret");
     }
 
     let config = AppConfig::from_env();
@@ -79,6 +89,9 @@ fn test_valid_env_values() {
     assert!(config.run_migrations);
     assert_eq!(config.db_conn_max_attempts, 20);
     assert_eq!(config.db_conn_retry_delay_seconds, 3);
+    assert_eq!(config.session_ttl_seconds, 1000);
+    assert_eq!(config.access_token_ttl_seconds, 100);
+    assert_eq!(config.jwt_secret, "secret");
 }
 
 #[test]
@@ -185,4 +198,50 @@ fn test_db_conn_config_invalid_values_fallback() {
     let config = AppConfig::from_env();
     assert_eq!(config.db_conn_max_attempts, 10);
     assert_eq!(config.db_conn_retry_delay_seconds, 2);
+}
+
+#[test]
+#[serial]
+fn test_session_and_token_defaults() {
+    clear_env();
+
+    let config = AppConfig::from_env();
+
+    assert_eq!(config.session_ttl_seconds, 604800); // 7 days
+    assert_eq!(config.access_token_ttl_seconds, 900); // 15 minutes
+    assert_eq!(config.jwt_secret, "");
+}
+
+#[test]
+#[serial]
+fn test_session_and_token_custom_valid_values() {
+    clear_env();
+
+    unsafe {
+        env::set_var("SESSION_TTL_SECONDS", "86400"); // 1 day
+        env::set_var("ACCESS_TOKEN_TTL_SECONDS", "600"); // 10 min
+        env::set_var("JWT_SECRET", "testsecret123");
+    }
+
+    let config = AppConfig::from_env();
+
+    assert_eq!(config.session_ttl_seconds, 86400);
+    assert_eq!(config.access_token_ttl_seconds, 600);
+    assert_eq!(config.jwt_secret, "testsecret123");
+}
+
+#[test]
+#[serial]
+fn test_session_and_token_invalid_values_fallback() {
+    clear_env();
+
+    unsafe {
+        env::set_var("SESSION_TTL_SECONDS", "0");
+        env::set_var("ACCESS_TOKEN_TTL_SECONDS", "-1");
+    }
+
+    let config = AppConfig::from_env();
+
+    assert_eq!(config.session_ttl_seconds, 604800); // fallback to 7 days
+    assert_eq!(config.access_token_ttl_seconds, 900); // fallback to 15 min
 }

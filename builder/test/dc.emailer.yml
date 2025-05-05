@@ -1,17 +1,17 @@
 services:
 
   # Emailer: App
-  app-emailer:
-    container_name: app-emailer
+  test-app-emailer:
+    container_name: test-app-emailer
     build:
       context: ../../app/emailer
-      dockerfile: Emailer.dev.dockerfile
+      dockerfile: Emailer.test.dockerfile
     restart: always
     depends_on:
-      db-app-emailer:
+      test-db-app-emailer:
         condition: service_started
     ports:
-      - "8002:8000"
+      - "8102:8000"
     volumes:
       - ../../app/emailer/src:/app/src
       - ../../app/emailer/migration:/app/migration
@@ -20,33 +20,34 @@ services:
       - ../../app/emailer/Cargo.lock:/app/Cargo.lock
       - /app/target
     networks:
-      - fi-emailer-net
+      - test-fi-emailer-net
 
   # Emailer: DB
-  db-app-emailer:
-    container_name: db-app-emailer
+  test-db-app-emailer:
+    container_name: test-db-app-emailer
     image: postgres:17.4
     restart: always
     environment:
-      POSTGRES_DB: emailer
+      POSTGRES_DB: test_emailer
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:
       - .dbdata/postgres/dev/emailer/:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5532:5432"
     networks:
-      - fi-emailer-net
+      - test-fi-emailer-net
 
-  mailhog:
-    container_name: mailhog
+  test-mailhog:
+    container_name: test-mailhog
     image: "mailhog/mailhog:latest"
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "1125:1025"
+      - "8125:8025"
     networks:
-      - fi-emailer-net
+      - test-fi-emailer-net
+
 
 networks:
-  fi-emailer-net:
+  test-fi-emailer-net:
     driver: bridge

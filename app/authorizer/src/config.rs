@@ -27,6 +27,10 @@ pub struct AppConfig {
 
     pub db_conn_max_attempts: u32,
     pub db_conn_retry_delay_seconds: u64,
+
+    pub session_ttl_seconds: i64,
+    pub access_token_ttl_seconds: i64,
+    pub jwt_secret: String,
 }
 
 impl AppConfig {
@@ -46,6 +50,9 @@ impl AppConfig {
 
         let default_db_conn_max_attempts: u32 = 10;
         let default_db_conn_retry_delay_seconds: u64 = 2;
+
+        let default_session_ttl_seconds: i64 = 604800; // 7 days
+        let default_access_token_ttl_seconds: i64 = 900; // 15 minutes
 
         let len = env::var("PASSCODE_LEN")
             .ok()
@@ -78,6 +85,14 @@ impl AppConfig {
         let db_retry_delay_seconds = env::var("DB_CONN_RETRY_DELAY_SECONDS")
             .ok()
             .and_then(|v| v.parse::<u64>().ok());
+
+        let session_seconds = env::var("SESSION_TTL_SECONDS")
+            .ok()
+            .and_then(|v| v.parse::<i64>().ok());
+
+        let token_seconds = env::var("ACCESS_TOKEN_TTL_SECONDS")
+            .ok()
+            .and_then(|v| v.parse::<i64>().ok());
 
         let (passcode_len, passcode_min_range, passcode_max_range) = match (
             len, min_range, max_range,
@@ -135,8 +150,19 @@ impl AppConfig {
 
         let walletor_url = env::var("WALLETOR_URL").unwrap_or_default();
         let walletor_test_url = env::var("WALLETOR_TEST_URL").unwrap_or_default();
-        
+
         let authorizer_test_url = env::var("AUTHORIZER_TEST_URL").unwrap_or_default();
+
+        let session_ttl_seconds: i64 = match session_seconds {
+            Some(seconds) if seconds > 0 => seconds,
+            _ => default_session_ttl_seconds,
+        };
+        let access_token_ttl_seconds: i64 = match token_seconds {
+            Some(seconds) if seconds > 0 => seconds,
+            _ => default_access_token_ttl_seconds,
+        };
+
+        let jwt_secret = env::var("JWT_SECRET").unwrap_or_default();
 
         Self {
             passcode_ttl_seconds,
@@ -152,16 +178,20 @@ impl AppConfig {
 
             database_url,
             database_test_url,
-            
+
             run_migrations,
-            
+
             emailer_url,
             emailer_test_url,
-            
+
             walletor_url,
             walletor_test_url,
-            
+
             authorizer_test_url,
+
+            session_ttl_seconds,
+            access_token_ttl_seconds,
+            jwt_secret,
         }
     }
 

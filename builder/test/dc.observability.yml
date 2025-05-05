@@ -1,0 +1,30 @@
+services:
+
+  #  Observability: Prometheus
+  test-prometheus:
+    container_name: test-prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9190:9090"
+    networks:
+      - test-fi-observability-net
+
+  #  Observability: Grafana
+  test-grafana:
+    container_name: test-grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3100:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - test-fi-observability-net
+
+networks:
+  test-fi-observability-net:
+    driver: bridge
+
