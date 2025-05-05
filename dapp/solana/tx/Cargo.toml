@@ -1,5 +1,5 @@
 [package]
-name = "tx"
+name = "transactor"
 version = "0.1.0"
 edition = "2024"
 

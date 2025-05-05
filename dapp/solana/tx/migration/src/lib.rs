@@ -7,3 +7,4 @@ impl MigratorTrait for Migrator {
         vec![]
     }
 }
+mod m20250505_140047_create_tx;

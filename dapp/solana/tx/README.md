@@ -9,5 +9,5 @@ cargo install sea-orm-cli
 
 #### Generate Migration
 ```bash
-sea-orm-cli migrate generate create_email
+sea-orm-cli migrate generate create_tx
 ```
