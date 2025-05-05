@@ -4,7 +4,7 @@ COMPOSE_FILES = \
 	-f dc.emailer.yml \
 	-f dc.observability.yml \
 	-f dc.solana.aggregator.yml \
-	-f dc.solana.tx.yml \
+	-f dc.solana.transactor.yml \
 	-f dc.solana.walletor.yml
 
 .PHONY: up down restart test
@@ -40,7 +40,7 @@ up-sol-agg:
 	docker compose -f dc.solana.aggregator.yml up --build
 
 up-sol-tx:
-	docker compose -f dc.solana.tx.yml up --build
+	docker compose -f dc.solana.transactor.yml up --build
 
 up-sol-wal:
 	docker compose -f dc.solana.walletor.yml up --build
