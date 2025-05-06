@@ -13,9 +13,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@orca-so/common-sdk": "^0.6.11",
-    "@orca-so/sdk": "^1.2.26",
-    "@solana/web3.js": "^1.98.2",
+    "@orca-so/whirlpools": "^1.1.2",
+    "@solana/kit": "^2.1.0",
+    "@solana/web3.js": "1.95.8",
+    "decimal.js": "^10.5.0",
     "express": "^5.1.0",
     "prom-client": "^15.1.3"
   },

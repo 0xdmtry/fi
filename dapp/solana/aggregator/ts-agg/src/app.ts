@@ -1,6 +1,7 @@
 import express from 'express';
 import {pingRouter} from './routes/ping';
 import {swapRouter} from './routes/swap';
+import {quoteRouter} from './routes/quote';
 import client from 'prom-client'; // <-- import prom-client
 
 const app = express();
@@ -39,5 +40,6 @@ app.use((req, res, next) => {
 // Routes
 app.use('/v1/ping', pingRouter);
 app.use('/v1/swap', swapRouter);
+app.use('/v1/quote', quoteRouter);
 
 export {app};
