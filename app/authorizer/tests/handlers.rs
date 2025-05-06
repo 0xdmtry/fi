@@ -4,3 +4,6 @@ mod join_handler;
 mod resend_handler;
 #[path = "handlers/verify_handler.rs"]
 mod verify_handler;
+
+#[path = "handlers/session_handler.rs"]
+mod session_handler;
