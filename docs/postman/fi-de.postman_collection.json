@@ -319,6 +319,33 @@
 																}
 															},
 															"response": []
+														},
+														{
+															"name": "quote",
+															"request": {
+																"method": "POST",
+																"header": [],
+																"body": {
+																	"mode": "raw",
+																	"raw": "{\n  \"inputMint\": \"So11111111111111111111111111111111111111112\",\n  \"outputMint\": \"BRjpCHtyQLNCo8gqRUr8jtdAj5AjPYQaoqbvcZiHok1k\",\n  \"amount\": \"1.0\",\n  \"slippage\": 0.5\n}\n",
+																	"options": {
+																		"raw": {
+																			"language": "json"
+																		}
+																	}
+																},
+																"url": {
+																	"raw": "{{dev_solana_ts_agg_host}}/v1/quote",
+																	"host": [
+																		"{{dev_solana_ts_agg_host}}"
+																	],
+																	"path": [
+																		"v1",
+																		"quote"
+																	]
+																}
+															},
+															"response": []
 														}
 													]
 												}
