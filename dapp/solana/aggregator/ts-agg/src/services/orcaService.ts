@@ -1,54 +1,93 @@
-import {Connection, PublicKey, Transaction} from '@solana/web3.js';
-import {getOrca, OrcaPoolConfig, OrcaU64, Network} from '@orca-so/sdk';
-import {DecimalUtil} from "@orca-so/common-sdk"; // ✅ Correct place
-import {SwapRequest, SwapResponse} from '../payloads/swap';
-import {POOL_MINTS_TO_CONFIG} from '../config/orcaPools';
+import {
+    setWhirlpoolsConfig,
+    swapInstructions,
+} from "@orca-so/whirlpools";
 
-const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
-const orca = getOrca(connection, Network.DEVNET);
+import {
+    createSolanaRpc,
+    devnet,
+    address,
+} from "@solana/kit";
 
-export async function createSwapTransaction(swapRequest: SwapRequest): Promise<SwapResponse> {
-    const {inputMint, outputMint, amount, slippage, userPublicKey} = swapRequest;
+import {
+    Transaction,
+    PublicKey,
+    sendAndConfirmRawTransaction,
+    TransactionInstruction,
+    VersionedTransaction,
+    TransactionMessage,
+} from "@solana/web3.js";
 
-    const poolKey = `${inputMint}_${outputMint}`;
-    const poolConfig = POOL_MINTS_TO_CONFIG[poolKey];
+import Decimal from "decimal.js";
+import {SwapRequest, SwapUnsignedResponse} from "../payloads/swap";
 
-    if (!poolConfig) {
-        throw new Error('Pool not supported for given mint pair');
+// Setup the RPC and SDK config once
+const rpc = createSolanaRpc(devnet("https://api.devnet.solana.com"));
+
+export async function initWhirlpoolSdk() {
+    await setWhirlpoolsConfig("solanaDevnet");
+}
+
+
+// Orca Devnet Pool
+const POOL_ADDRESS = address("3KBZiL2g8C7tiJ32hTv5v3KM7aK9htpqTw4cTXz1HvPt");
+const WSOL_MINT = address("So11111111111111111111111111111111111111112");
+const WSOL_DECIMALS = 9;
+
+export async function buildUnsignedSwapTransaction(
+    req: SwapRequest
+): Promise<SwapUnsignedResponse> {
+    const {inputMint, amount, slippage, userPublicKey} = req;
+
+    if (inputMint !== WSOL_MINT.toString()) {
+        throw new Error("Only WSOL input is supported in this example.");
     }
 
-    const pool = orca.getPool(poolConfig);
+    const inputAmountDecimal = new Decimal(amount);
+    const inputAmountRaw = BigInt(
+        inputAmountDecimal.mul(Decimal.pow(10, WSOL_DECIMALS)).toFixed(0)
+    );
+    const slippageBps = Math.floor(slippage * 100);
 
-    const inputToken = pool.getTokenA().mint.toBase58() === inputMint
-        ? pool.getTokenA()
-        : pool.getTokenB();
+    // Call Orca to generate quote + instructions
+    const {instructions} = await swapInstructions(
+        rpc,
+        {
+            inputAmount: inputAmountRaw,
+            mint: WSOL_MINT,
+        },
+        POOL_ADDRESS,
+        slippageBps,
+        {
+            address: address(userPublicKey),
+            // these next two functions will never be called since we're not signing here
+            signAndSendTransactions: () => {
+                throw new Error("signAndSendTransactions is not supported in MPC flow");
+            },
+        }
+    );
 
-    const amountNumber = parseFloat(amount);
+    // Get latest blockhash
+    const blockhashResponse = await rpc.getLatestBlockhash().send();
+    const blockhash = blockhashResponse.value.blockhash;
 
-    if (isNaN(amountNumber)) {
-        throw new Error('Invalid amount format');
-    }
+    // Convert Orca instructions (IInstruction) to real TransactionInstructions
+    const realInstructions: TransactionInstruction[] = instructions.map((i) => (i as any).instruction);
 
-    const amountDecimal = DecimalUtil.fromNumber(amountNumber);
 
-    const amountIn = OrcaU64.fromDecimal(amountDecimal, inputToken.scale);
+    // Build v0 transaction
+    const message = new TransactionMessage({
+        payerKey: new PublicKey(userPublicKey),
+        recentBlockhash: blockhash,
+        instructions: realInstructions,
+    }).compileToV0Message();
 
-    const slippageDecimal = DecimalUtil.fromNumber(slippage);
+    const unsignedTx = new VersionedTransaction(message);
 
-    const swapQuote = await pool.getQuote(inputToken, amountIn, slippageDecimal);
+    const txBase64 = Buffer.from(unsignedTx.serialize()).toString("base64");
 
-    const userPubkey = new PublicKey(userPublicKey);
-
-    const swapPayload = await pool.swap(userPubkey, inputToken, amountIn, swapQuote.getMinOutputAmount());
-
-    const transaction = swapPayload.transaction;
-
-    const serializedTransaction = transaction.serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-    });
-
-    const transactionBase64 = serializedTransaction.toString('base64');
-
-    return {transactionBase64};
+    return {
+        transactionBase64: txBase64,
+        pool: POOL_ADDRESS.toString(),
+    };
 }
