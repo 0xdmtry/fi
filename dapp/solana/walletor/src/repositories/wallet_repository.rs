@@ -44,3 +44,15 @@ pub async fn insert_new_wallet(
 
     Ok(new_wallet.insert(db).await?)
 }
+
+pub async fn find_wallet_by_id(
+    db: &DbConn,
+    wallet_id: Uuid,
+) -> anyhow::Result<Option<wallet::Model>> {
+    let result = wallet::Entity::find()
+        .filter(wallet::Column::Id.eq(wallet_id))
+        .one(db)
+        .await?;
+
+    Ok(result)
+}

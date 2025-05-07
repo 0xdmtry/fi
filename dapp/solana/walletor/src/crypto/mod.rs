@@ -86,3 +86,18 @@ pub fn generate_random_bytes(len: usize) -> Vec<u8> {
     SecureOsRng.fill_bytes(&mut buf);
     buf
 }
+
+/// Join (user_share, server_share) to recover the original secret
+pub fn join_secret_xor(user_share: &[u8], server_share: &[u8]) -> Vec<u8> {
+    assert_eq!(
+        user_share.len(),
+        server_share.len(),
+        "Shares must be equal length"
+    );
+
+    user_share
+        .iter()
+        .zip(server_share.iter())
+        .map(|(u, s)| u ^ s)
+        .collect()
+}

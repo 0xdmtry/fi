@@ -47,6 +47,8 @@ scrypt = "0.11.0"
 aes-gcm = "0.10.3"
 solana-sdk = "2.2.2"
 rand_core = "0.6.4"
+base64 = "0.22.1"
+bincode = "1.3.3"
 
 [dev-dependencies]
 # --- Dev-only: for advanced testing patterns ---
