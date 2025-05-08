@@ -1,4 +1,4 @@
-use tx::app;
+use transactor::app;
 
 #[tokio::main]
 async fn main() {

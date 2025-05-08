@@ -1,6 +1,6 @@
 use serial_test::serial;
 use std::env;
-use tx::config::AppConfig;
+use transactor::config::AppConfig;
 
 fn clear_env() {
     for key in [

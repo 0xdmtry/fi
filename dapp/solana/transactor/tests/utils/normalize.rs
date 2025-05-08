@@ -1,4 +1,4 @@
-use tx::utils::normalize::normalize_str;
+use transactor::utils::normalize::normalize_str;
 
 #[test]
 fn test_email_cases_normalization() {
