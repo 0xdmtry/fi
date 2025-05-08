@@ -70,7 +70,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"email\": \"004-2025-04-30@example.com\"\n}",
+													"raw": "{\n    \"email\": \"004-2025-05-08@example.com\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -342,6 +342,33 @@
 																	"path": [
 																		"v1",
 																		"quote"
+																	]
+																}
+															},
+															"response": []
+														},
+														{
+															"name": "swap",
+															"request": {
+																"method": "POST",
+																"header": [],
+																"body": {
+																	"mode": "raw",
+																	"raw": "{\n  \"inputMint\": \"So11111111111111111111111111111111111111112\",\n  \"outputMint\": \"BRjpCHtyQLNCo8gqRUr8jtdAj5AjPYQaoqbvcZiHok1k\",\n  \"amount\": \"0.5\",\n  \"slippage\": 0.5,\n  \"userPublicKey\": \"Fx5hfiax2afvS2oSfh8aRXoVcLVUcrfjWMsnuD5ZsVpX\"\n}\n",
+																	"options": {
+																		"raw": {
+																			"language": "json"
+																		}
+																	}
+																},
+																"url": {
+																	"raw": "{{dev_solana_ts_agg_host}}/v1/swap",
+																	"host": [
+																		"{{dev_solana_ts_agg_host}}"
+																	],
+																	"path": [
+																		"v1",
+																		"swap"
 																	]
 																}
 															},
