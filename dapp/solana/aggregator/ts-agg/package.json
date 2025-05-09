@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@orca-so/whirlpools": "^1.1.2",
+    "@orca-so/whirlpools-core": "^2.0.0",
     "@solana/kit": "^2.1.0",
     "@solana/web3.js": "1.95.8",
     "decimal.js": "^10.5.0",
