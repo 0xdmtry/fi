@@ -26,6 +26,7 @@ import Decimal from "decimal.js";
 import {SwapRequest, SwapUnsignedResponse} from "../payloads/swap";
 
 import {AccountRole, Address} from "@solana/kit";
+import {requestSignatureFromWalletor} from "./walletorService";
 
 // Setup the RPC and SDK config once
 const rpc = createSolanaRpc(devnet("https://api.devnet.solana.com"));
@@ -170,6 +171,12 @@ export async function buildUnsignedSwapTransaction(
     console.log("message", message);
     console.log("unsignedTx", unsignedTx);
     console.log("txBase64", txBase64);
+
+    const result = await requestSignatureFromWalletor({
+        user_id: "3c75c313-48b6-4728-9397-3e8004255875",
+        transaction_base64: txBase64,
+        // wallet_id: "optional-wallet-id", // if needed
+    });
 
     return {
         transactionBase64: txBase64,
