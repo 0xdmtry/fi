@@ -40,10 +40,18 @@ const POOL_ADDRESS = address("3KBZiL2g8C7tiJ32hTv5v3KM7aK9htpqTw4cTXz1HvPt");
 const WSOL_MINT = address("So11111111111111111111111111111111111111112");
 const WSOL_DECIMALS = 9;
 
-function toAccountMeta(account: { address: Address; role: AccountRole }): AccountMeta {
+// function toAccountMeta(account: { address: Address; role: AccountRole }): AccountMeta {
+//     return {
+//         pubkey: new PublicKey(account.address),
+//         isSigner: account.role === AccountRole.READONLY_SIGNER || account.role === AccountRole.WRITABLE_SIGNER,
+//         isWritable: account.role === AccountRole.WRITABLE || account.role === AccountRole.WRITABLE_SIGNER,
+//     };
+// }
+
+function toAccountMeta(account: { address: Address; role: AccountRole }, userPublicKey: string): AccountMeta {
     return {
         pubkey: new PublicKey(account.address),
-        isSigner: account.role === AccountRole.READONLY_SIGNER || account.role === AccountRole.WRITABLE_SIGNER,
+        isSigner: account.address.toString() === userPublicKey, // only sign for this address
         isWritable: account.role === AccountRole.WRITABLE || account.role === AccountRole.WRITABLE_SIGNER,
     };
 }
@@ -114,12 +122,28 @@ export async function buildUnsignedSwapTransaction(
     const blockhash = blockhashResponse.value.blockhash;
 
     // Convert Orca instructions (IInstruction) to real TransactionInstructions
+    // const realInstructions: TransactionInstruction[] = instructions.map((ix) => {
+    //     if (!ix.accounts || !ix.data) {
+    //         throw new Error("Invalid instruction: missing accounts or data");
+    //     }
+    //
+    //     const keys: AccountMeta[] = ix.accounts.map(toAccountMeta);
+    //
+    //     return new TransactionInstruction({
+    //         programId: new PublicKey(ix.programAddress),
+    //         keys,
+    //         data: Buffer.from(ix.data),
+    //     });
+    // });
+
     const realInstructions: TransactionInstruction[] = instructions.map((ix) => {
         if (!ix.accounts || !ix.data) {
             throw new Error("Invalid instruction: missing accounts or data");
         }
 
-        const keys: AccountMeta[] = ix.accounts.map(toAccountMeta);
+        const keys: AccountMeta[] = ix.accounts.map((acc) =>
+            toAccountMeta(acc, userPublicKey)
+        );
 
         return new TransactionInstruction({
             programId: new PublicKey(ix.programAddress),
