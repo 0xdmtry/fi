@@ -43,7 +43,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"email\": \"001-2025-04-26@example.com\",\n    \"passcode\": \"1565\"\n}",
+													"raw": "{\n    \"email\": \"001-2025-05-09@example.com\",\n    \"passcode\": \"1981\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -70,7 +70,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"email\": \"004-2025-05-08@example.com\"\n}",
+													"raw": "{\n    \"email\": \"001-2025-05-09@example.com\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -288,6 +288,33 @@
 														}
 													},
 													"response": []
+												},
+												{
+													"name": "sign",
+													"request": {
+														"method": "POST",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"transaction_base64\": \"AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQAHE01ae19ysLAvhWh8AKOAjUX+5d9VaVm9T8G+vKH3x6+JApu15XhU9lxKI2pIAZUlElJWjAc8xQ7om/RrT2J4YIE6oqIF/uHfPdU+0oOi5LJtCYnxOebhIQ6QXqFM5e5IQyJfxe8bK2e54JGoS8WXMGHzUIYuO1TB6gxs/DssSVZDpb4IWTOJbhi4wglsB+hvXAFLWW8HSCjoDtc7y0BMi/lcT8Ck+fwkrKsw8TYhd1+FIWj6092UxGsliROKNoezHksT0t/3U7NnLc4BgHIDvM0wvqVeoQ+odJx/7qqKG0AThfYR5w0CGs7aKPnDrl7nS/noVSUhLbK97mgL6rDrRQ0mNy9QyM3udTWJ7Pn4sp4T8x5fRtLp/1hUpUWO3Y/3/hOHacq/rrTjuXBesOj+EAyyGKfu7+SOoTXSeAMG3jlVDpWaQOvGVj0LP8akFRJQMNAXl3OJYQgwAL+FRnJBsad1GquFMwOWIkB67EoX9moZcnGHkzZB6e1cPjd0AQWGVIyXJY9OJInxuz0QKRSODYMLWhOZ2v8QhASOe9jb6fhZmus34bT1i1j/NvL87IOpgAjrFnX5ANOmq5CK+LjYUIcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpBpuIV/6rgYT7aH9jRhjANdrEOdwa6ztVmKDwAAAAAAEOA2hfjpCQU+RYEhxm9adq7cdwaqEcgviqlSqPK3h5qQVKU1qZKSEGTSTocWDaOHx8NbXdvJK7geQfqEBBBUSN6JyvGB+0n8HONwE6W5EFhnUMN1KAQt8HOtqrsmv8UAMFDAYAAQANDg8BAA4CAAI0AAAAAPCC7B0AAAAApQAAAAAAAAAG3fbh12Whk9nL4UbO63msHLSF7V9bN5E6jPWFfv8AqQ8CAhAhEk1ae19ysLAvhWh8AKOAjUX+5d9VaVm9T8G+vKH3x6+JEREPDxIAAxANAgQBBQYHCAkKCzErBO0LGskeYgBlzR0AAAAA9NkqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQAAAAYCDwMCAAABCQA=\",\n    \"user_id\": \"3c75c313-48b6-4728-9397-3e8004255875\"\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{dev_solana_walletor_host}}/v1/sign",
+															"host": [
+																"{{dev_solana_walletor_host}}"
+															],
+															"path": [
+																"v1",
+																"sign"
+															]
+														}
+													},
+													"response": []
 												}
 											]
 										}
@@ -354,7 +381,7 @@
 																"header": [],
 																"body": {
 																	"mode": "raw",
-																	"raw": "{\n  \"inputMint\": \"So11111111111111111111111111111111111111112\",\n  \"outputMint\": \"BRjpCHtyQLNCo8gqRUr8jtdAj5AjPYQaoqbvcZiHok1k\",\n  \"amount\": \"0.5\",\n  \"slippage\": 0.5,\n  \"userPublicKey\": \"Fx5hfiax2afvS2oSfh8aRXoVcLVUcrfjWMsnuD5ZsVpX\"\n}\n",
+																	"raw": "{\n  \"inputMint\": \"So11111111111111111111111111111111111111112\",\n  \"outputMint\": \"BRjpCHtyQLNCo8gqRUr8jtdAj5AjPYQaoqbvcZiHok1k\",\n  \"amount\": \"0.5\",\n  \"slippage\": 0.5,\n  \"userPublicKey\": \"6CxR6QhuJwz1sqxXiuPTHrjzKWrW7m7jEekP5sMxrHmz\"\n}\n",
 																	"options": {
 																		"raw": {
 																			"language": "json"
