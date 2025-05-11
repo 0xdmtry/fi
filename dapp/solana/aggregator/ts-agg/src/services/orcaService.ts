@@ -2,150 +2,118 @@ import {
     setWhirlpoolsConfig,
     swapInstructions,
 } from "@orca-so/whirlpools";
-
 import {
     createSolanaRpc,
     devnet,
     address,
 } from "@solana/kit";
-
 import {
-    Transaction,
     PublicKey,
-    sendAndConfirmRawTransaction,
     TransactionInstruction,
     VersionedTransaction,
     TransactionMessage,
+    Keypair,
 } from "@solana/web3.js";
-
-import {
-    AccountMeta,
-} from "@solana/web3.js";
-
-import Decimal from "decimal.js";
-import {SwapRequest, SwapUnsignedResponse} from "../payloads/swap";
-
-import {AccountRole, Address} from "@solana/kit";
+import {requestAtaCreationFromWalletor} from "./ataService";
 import {requestSignatureFromWalletor} from "./walletorService";
+import {SwapRequest, SwapUnsignedResponse} from "../payloads/swap";
+import {AccountRole, Address} from "@solana/kit";
+import Decimal from "decimal.js";
 
-// Setup the RPC and SDK config once
+// Setup RPC
 const rpc = createSolanaRpc(devnet("https://api.devnet.solana.com"));
 
-export async function initWhirlpoolSdk() {
-    await setWhirlpoolsConfig("solanaDevnet");
-}
-
-
-// Orca Devnet Pool
 const POOL_ADDRESS = address("3KBZiL2g8C7tiJ32hTv5v3KM7aK9htpqTw4cTXz1HvPt");
 const WSOL_MINT = address("So11111111111111111111111111111111111111112");
 const WSOL_DECIMALS = 9;
 
-// function toAccountMeta(account: { address: Address; role: AccountRole }): AccountMeta {
-//     return {
-//         pubkey: new PublicKey(account.address),
-//         isSigner: account.role === AccountRole.READONLY_SIGNER || account.role === AccountRole.WRITABLE_SIGNER,
-//         isWritable: account.role === AccountRole.WRITABLE || account.role === AccountRole.WRITABLE_SIGNER,
-//     };
-// }
-
-function toAccountMeta(account: { address: Address; role: AccountRole }, userPublicKey: string): AccountMeta {
+function toAccountMeta(account: { address: Address; role: AccountRole }): {
+    pubkey: PublicKey,
+    isSigner: boolean,
+    isWritable: boolean
+} {
+    const isSigner = account.role === AccountRole.READONLY_SIGNER || account.role === AccountRole.WRITABLE_SIGNER;
+    const isWritable = account.role === AccountRole.WRITABLE || account.role === AccountRole.WRITABLE_SIGNER;
+    console.log(`→ account: ${account.address} | role: ${account.role} | isSigner: ${isSigner} | isWritable: ${isWritable}`);
     return {
         pubkey: new PublicKey(account.address),
-        isSigner: account.address.toString() === userPublicKey, // only sign for this address
-        isWritable: account.role === AccountRole.WRITABLE || account.role === AccountRole.WRITABLE_SIGNER,
+        isSigner,
+        isWritable,
     };
 }
 
-// Define a type guard
-function isIAccountMeta(
-    acc: unknown
-): acc is { pubkey: string; isSigner: boolean; isWritable: boolean } {
-    return (
-        typeof acc === "object" &&
-        acc !== null &&
-        "pubkey" in acc &&
-        "isSigner" in acc &&
-        "isWritable" in acc
-    );
-}
-
-export async function buildUnsignedSwapTransaction(
-    req: SwapRequest
-): Promise<SwapUnsignedResponse> {
-
-    console.log("buildUnsignedSwapTransaction");
-    console.log("req", req);
-
+export async function buildUnsignedSwapTransaction(req: SwapRequest): Promise<SwapUnsignedResponse> {
+    console.log("🔧 buildUnsignedSwapTransaction");
     const {inputMint, amount, slippage, userPublicKey} = req;
+    console.log("📥 inputMint:", inputMint);
+    console.log("💰 amount:", amount);
+    console.log("📉 slippage:", slippage);
+    console.log("👤 userPublicKey:", userPublicKey);
 
-    console.log("inputMint", inputMint);
-    console.log("amount", amount);
-    console.log("slippage", slippage);
-    console.log("userPublicKey", userPublicKey);
-
-    if (inputMint !== WSOL_MINT.toString()) {
-        throw new Error("Only WSOL input is supported in this example.");
+    // STEP 1: Pre-create ATA (if needed)
+    try {
+        const ataResult = await requestAtaCreationFromWalletor({
+            user_id: "3c75c313-48b6-4728-9397-3e8004255875",
+            token_mint: inputMint,
+        });
+        console.log("✅ ATA created:", ataResult);
+    } catch (err) {
+        console.error("❌ Failed to create ATA via Walletor:", err);
+        throw err;
     }
 
+    // STEP 2: Convert amount + slippage
     const inputAmountDecimal = new Decimal(amount);
     const inputAmountRaw = BigInt(
         inputAmountDecimal.mul(Decimal.pow(10, WSOL_DECIMALS)).toFixed(0)
     );
     const slippageBps = Math.floor(slippage * 100);
+    console.log("🧮 inputAmountRaw:", inputAmountRaw);
+    console.log("🎯 slippageBps:", slippageBps);
 
-    console.log("inputAmountDecimal", inputAmountDecimal);
-    console.log("inputAmountRaw", inputAmountRaw);
-    console.log("slippageBps", slippageBps);
-
-    // Call Orca to generate quote + instructions
+    // STEP 3: Build swap instructions
     const {instructions} = await swapInstructions(
         rpc,
         {
             inputAmount: inputAmountRaw,
-            mint: WSOL_MINT,
+            mint: WSOL_MINT, // Make sure this is WSOL as SPL, not native SOL
         },
         POOL_ADDRESS,
         slippageBps,
         {
             address: address(userPublicKey),
-            // these next two functions will never be called since we're not signing here
             signAndSendTransactions: () => {
                 throw new Error("signAndSendTransactions is not supported in MPC flow");
             },
         }
     );
 
-    console.log("instructions", instructions);
-
-    // Get latest blockhash
-    const blockhashResponse = await rpc.getLatestBlockhash().send();
-    const blockhash = blockhashResponse.value.blockhash;
-
-    // Convert Orca instructions (IInstruction) to real TransactionInstructions
-    // const realInstructions: TransactionInstruction[] = instructions.map((ix) => {
-    //     if (!ix.accounts || !ix.data) {
-    //         throw new Error("Invalid instruction: missing accounts or data");
-    //     }
-    //
-    //     const keys: AccountMeta[] = ix.accounts.map(toAccountMeta);
-    //
-    //     return new TransactionInstruction({
-    //         programId: new PublicKey(ix.programAddress),
-    //         keys,
-    //         data: Buffer.from(ix.data),
-    //     });
-    // });
-
-    const realInstructions: TransactionInstruction[] = instructions.map((ix) => {
-        if (!ix.accounts || !ix.data) {
-            throw new Error("Invalid instruction: missing accounts or data");
+    console.log("🧾 Instructions fetched from Orca:");
+    instructions.forEach((ix, i) => {
+        if (!ix || !ix.accounts) {
+            console.error("❌ Invalid instruction format:", ix);
+            return;
         }
 
-        const keys: AccountMeta[] = ix.accounts.map((acc) =>
-            toAccountMeta(acc, userPublicKey)
-        );
+        console.log(`📦 Instruction[${i}]`);
+        console.log(`  ↪ Program: ${ix.programAddress}`);
+        ix.accounts.forEach((acc, j) => {
+            console.log(`    🔹 Account[${j}]: ${acc.address} | role: ${acc.role}`);
+        });
+    });
 
+    const blockhash = (await rpc.getLatestBlockhash().send()).value.blockhash;
+    console.log("⛓️ Blockhash:", blockhash);
+
+    // STEP 4: Convert to TransactionInstruction[]
+    const realInstructions: TransactionInstruction[] = instructions.map((ix, idx) => {
+
+        if (!ix || !ix.accounts || !ix.data) {
+            console.error("❌ Invalid instruction format:", ix);
+            throw new Error(`Invalid instruction format at index ${idx}`);
+        }
+
+        const keys = ix.accounts.map(toAccountMeta);
         return new TransactionInstruction({
             programId: new PublicKey(ix.programAddress),
             keys,
@@ -153,30 +121,50 @@ export async function buildUnsignedSwapTransaction(
         });
     });
 
-    console.log("blockhashResponse", blockhashResponse);
-    console.log("blockhash", blockhash);
-    console.log("realInstructions", realInstructions);
-
-    // Build v0 transaction
+    // STEP 5: Compile Message
     const message = new TransactionMessage({
         payerKey: new PublicKey(userPublicKey),
         recentBlockhash: blockhash,
         instructions: realInstructions,
     }).compileToV0Message();
 
-    const unsignedTx = new VersionedTransaction(message);
-
-    const txBase64 = Buffer.from(unsignedTx.serialize()).toString("base64");
-
-    console.log("message", message);
-    console.log("unsignedTx", unsignedTx);
-    console.log("txBase64", txBase64);
-
-    const result = await requestSignatureFromWalletor({
-        user_id: "3c75c313-48b6-4728-9397-3e8004255875",
-        transaction_base64: txBase64,
-        // wallet_id: "optional-wallet-id", // if needed
+    console.log("📩 Compiled V0 message:");
+    console.log("  🔐 Required signers:", message.header.numRequiredSignatures);
+    console.log("  📚 Static account keys:");
+    message.staticAccountKeys.forEach((key, idx) => {
+        const label = idx < message.header.numRequiredSignatures ? "SIGNER" : "NON-SIGNER";
+        console.log(`    ${label} [${idx}]: ${key.toBase58()}`);
     });
+
+    // STEP 6: Prepare transaction object
+    const tx = new VersionedTransaction(message);
+
+    // STEP 7: Optional — Sign locally if you generated ephemeral keypairs
+    // Example placeholder (commented out):
+    // const tempKeypair = Keypair.generate(); // e.g. for WSOL temp account
+    // tx.sign([tempKeypair]);
+    // console.log("✍️ Locally signed with ephemeral keypair:", tempKeypair.publicKey.toBase58());
+
+    // STEP 8: Print partially signed transaction state
+    const numSignatures = tx.signatures.filter(sig => !sig.every(b => b === 0)).length;
+    console.log(`🧾 Transaction signature slots:`);
+    tx.signatures.forEach((sig, i) => {
+        const isSigned = !sig.every(b => b === 0);
+        const status = isSigned ? "✅ Signed" : "⛔ Not Signed";
+        console.log(`  Slot[${i}] ${status}`);
+    });
+    console.log(`  👉 Total signed: ${numSignatures}/${message.header.numRequiredSignatures}`);
+
+    // STEP 9: Serialize and send to Walletor for final signature
+    const txBase64 = Buffer.from(tx.serialize()).toString("base64");
+    console.log("📦 Transaction base64 (pre-MPC):", txBase64.slice(0, 120) + "...");
+
+    await requestSignatureFromWalletor({
+        user_id: "3c75c313-48b6-4728-9397-3e8004255875", // TEMPORARY
+        transaction_base64: txBase64,
+    });
+
+    console.log("✅ Walletor signature completed");
 
     return {
         transactionBase64: txBase64,

@@ -1,4 +1,4 @@
-use super::{ping, sign, signup};
+use super::{ata, ping, sign, signup};
 use crate::state::AppState;
 use axum::Router;
 
@@ -7,4 +7,5 @@ pub fn routes() -> Router<AppState> {
         .merge(ping::routes())
         .merge(signup::routes())
         .merge(sign::routes())
+        .merge(ata::routes())
 }

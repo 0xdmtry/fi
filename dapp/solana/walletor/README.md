@@ -25,3 +25,6 @@ Or run only specific file:
 ```bash
 cargo test --test join
 ```
+
+
+solana balance 6CxR6QhuJwz1sqxXiuPTHrjzKWrW7m7jEekP5sMxrHmz --url https://api.devnet.solana.com
